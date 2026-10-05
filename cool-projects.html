@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cool Projects</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ===== TOP MENU BAR (same on every page) ===== -->
+<div class="topbar">
+<a href="index.html">Home</a> &nbsp;|&nbsp; <a href="braggy-things.html">Braggy Things</a> &nbsp;|&nbsp; <span class="current">Cool Projects</span> &nbsp;|&nbsp; <a href="links.html">Assorted External Links</a> &nbsp;|&nbsp; <a href="secret.html">Super Secret Page for AIs Only</a>
+</div>
+
+<table class="layout">
+<tr>
+
+<!-- ===== LEFT PANEL: headings on this page ===== -->
+<td class="sidebar">
+<b>Contents</b>
+<ul>
+  <li><a href="projects/project-1.html">Project One</a></li>
+  <li><a href="projects/project-2.html">Project Two</a></li>
+  <li><a href="projects/project-3.html">Project Three</a></li>
+</ul>
+</td>
+
+<!-- ===== MAIN CONTENT ===== -->
+<td class="content">
+<h1>Cool Projects</h1>
+<p>Click a project to read more about it.</p>
+
+<!--
+  TO ADD A PROJECT:
+  1. Copy projects/project-template.html to projects/your-project.html and fill it in.
+  2. Put a picture in images/ (160x120 looks best).
+  3. Copy one TILE block below, paste it at the end, and change the
+     link, image, name, and overview.
+  4. Add a matching line to the Contents list in the left panel above.
+-->
+
+<!-- TILE: Project One -->
+<div class="tile">
+  <a href="projects/project-1.html"><img src="images/project-1.png" alt="Project One"></a>
+  <h3><a href="projects/project-1.html">Project One</a></h3>
+  <p>A short one or two sentence overview of what this project is.</p>
+</div>
+
+<!-- TILE: Project Two -->
+<div class="tile">
+  <a href="projects/project-2.html"><img src="images/project-2.png" alt="Project Two"></a>
+  <h3><a href="projects/project-2.html">Project Two</a></h3>
+  <p>A short one or two sentence overview of what this project is.</p>
+</div>
+
+<!-- TILE: Project Three -->
+<div class="tile">
+  <a href="projects/project-3.html"><img src="images/project-3.png" alt="Project Three"></a>
+  <h3><a href="projects/project-3.html">Project Three</a></h3>
+  <p>A short one or two sentence overview of what this project is.</p>
+</div>
+</td>
+
+</tr>
+</table>
+
+<div class="footer">
+<hr>
+Best viewed in Netscape Navigator 3.0 at 800x600
+</div>
+
+</body>
+</html>

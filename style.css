@@ -1,0 +1,67 @@
+/* ====== Plain 90s style ====== */
+body {
+  background: #c0c0c0;
+  color: #000000;
+  font-family: "Times New Roman", Times, serif;
+  margin: 8px;
+}
+a:link    { color: #0000ee; }
+a:visited { color: #551a8b; }
+a:hover   { color: #ff0000; }
+
+h1 { font-size: 28px; margin: 4px 0 8px 0; }
+h2 { font-size: 22px; border-bottom: 1px solid #808080; margin-top: 24px; }
+h3 { font-size: 18px; }
+
+/* ----- Top menu bar ----- */
+.topbar {
+  background: #000080;
+  color: #ffffff;
+  padding: 6px;
+  border: 2px outset #ffffff;
+}
+.topbar a:link, .topbar a:visited { color: #ffffff; font-weight: bold; }
+.topbar a:hover { color: #ffff00; }
+.topbar .current { color: #ffff00; font-weight: bold; }
+
+/* ----- Two-column layout ----- */
+.layout { width: 100%; border-collapse: collapse; margin-top: 8px; }
+.sidebar {
+  width: 180px;
+  vertical-align: top;
+  background: #e0e0e0;
+  border: 2px inset #ffffff;
+  padding: 8px;
+  font-size: 14px;
+}
+.sidebar b { display: block; margin-bottom: 4px; }
+.sidebar ul { margin: 0; padding-left: 16px; }
+.sidebar ul ul { padding-left: 14px; }
+.content {
+  vertical-align: top;
+  background: #ffffff;
+  border: 2px inset #ffffff;
+  padding: 12px 16px;
+}
+
+/* ----- Project tiles ----- */
+.tile {
+  display: inline-block;
+  width: 180px;
+  margin: 0 8px 12px 0;
+  vertical-align: top;
+  background: #ffffcc;
+  border: 2px outset #c0c0c0;
+  padding: 8px;
+  text-align: center;
+}
+.tile img { border: 1px solid #000000; width: 160px; height: 120px; }
+.tile p { text-align: left; font-size: 14px; }
+
+.footer { text-align: center; font-size: 12px; margin-top: 8px; }
+
+/* ----- Small screens: stack the sidebar on top ----- */
+@media (max-width: 600px) {
+  .layout, .layout tr, .sidebar, .content { display: block; width: auto; }
+  .tile { display: block; width: auto; margin-right: 0; }
+}
