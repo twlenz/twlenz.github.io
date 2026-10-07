@@ -1,0 +1,589 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Afterimage Flash</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    color-scheme: dark;
+    --panel-bg: rgba(13,13,17,0.74);
+    --panel-border: rgba(255,255,255,0.14);
+    --panel-border-strong: rgba(255,255,255,0.26);
+    --text: #F3F1EC;
+    --text-muted: #9C9CA3;
+    --warn: #FFB74D;
+    --ring: rgba(255,255,255,0.9);
+  }
+
+  *{ box-sizing: border-box; }
+
+  body{
+    background: #050507;
+    min-height: 100%;
+    overflow: hidden;
+    font-family: "IBM Plex Sans", system-ui, sans-serif;
+  }
+
+  #stage{
+    position: fixed;
+    inset: 0;
+    background: #1c3a5e;
+    cursor: pointer;
+  }
+
+  #hint{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 22px 28px;
+    border-radius: 16px;
+    background: rgba(5,5,7,0.4);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    color: rgba(255,255,255,0.92);
+    text-align: center;
+    pointer-events: none;
+    transition: opacity 220ms ease;
+  }
+  #hint svg{ width: 34px; height: 34px; }
+  #hint span{ font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; font-weight: 600; }
+  #hint.playing{ opacity: 0; }
+
+  #panel{
+    position: fixed;
+    top: calc(16px + env(safe-area-inset-top, 0px));
+    left: calc(16px + env(safe-area-inset-left, 0px));
+    width: min(248px, calc(100vw - 32px));
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
+    padding: 18px;
+    border-radius: 20px;
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    box-shadow: 0 24px 60px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3);
+    backdrop-filter: blur(22px) saturate(150%);
+    -webkit-backdrop-filter: blur(22px) saturate(150%);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .eyebrow{
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .field-label{
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .wheel-wrap{
+    display: flex;
+    justify-content: center;
+  }
+  #wheel{
+    touch-action: none;
+    cursor: grab;
+  }
+  #wheel.dragging{ cursor: grabbing; }
+
+  .swatches{
+    display: flex;
+    gap: 10px;
+  }
+  .swatch{
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+  .swatch .chip{
+    width: 16px;
+    height: 16px;
+    border-radius: 5px;
+    flex: none;
+    border: 1px solid rgba(255,255,255,0.35);
+  }
+  .swatch .meta{ min-width: 0; }
+  .swatch .name{
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .swatch .hex{
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 12.5px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  hr{
+    border: none;
+    border-top: 1px solid var(--panel-border);
+    margin: 0;
+  }
+
+  .rate-head{
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+  }
+  .rate-head output{
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    color: var(--text);
+  }
+
+  #measuredOut{
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-muted);
+    margin-top: 6px;
+    min-height: 14px;
+  }
+
+  input[type="range"]{
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.18);
+    outline-offset: 4px;
+  }
+  input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--text);
+    border: 2px solid rgba(0,0,0,0.35);
+    cursor: pointer;
+  }
+  input[type="range"]::-moz-range-thumb{
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--text);
+    border: 2px solid rgba(0,0,0,0.35);
+    cursor: pointer;
+  }
+
+  #toggle{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 11px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--panel-border-strong);
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+  }
+  #toggle:hover{ background: rgba(255,255,255,0.11); }
+  #toggle:focus-visible, input[type="range"]:focus-visible, #wheel:focus-visible{
+    outline: 2px solid var(--ring);
+  }
+  #toggle svg{ width: 15px; height: 15px; }
+
+  .caption{
+    font-size: 11.5px;
+    line-height: 1.5;
+    color: var(--text-muted);
+  }
+  .caption strong{ color: var(--text); font-weight: 600; }
+
+  @media (prefers-reduced-motion: reduce){
+    #stage{ transition: none; }
+  }
+</style>
+
+<div id="stage" role="button" aria-label="Toggle flashing" tabindex="0">
+  <div id="hint">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 5v14l11-7z" fill="currentColor" stroke="none"/></svg>
+    <span>Press play to start</span>
+  </div>
+</div>
+
+<div id="panel">
+  <div class="eyebrow">Afterimage Flash</div>
+
+  <div>
+    <span class="field-label">Color</span>
+    <div class="wheel-wrap">
+      <canvas id="wheel" width="168" height="168" style="width:168px;height:168px" role="slider" aria-label="Hue and saturation" aria-valuetext="Selected color"></canvas>
+    </div>
+  </div>
+
+  <div class="swatches">
+    <div class="swatch">
+      <span class="chip" id="chipA"></span>
+      <span class="meta"><span class="name">Selected</span><br><span class="hex" id="hexA">#000000</span></span>
+    </div>
+    <div class="swatch">
+      <span class="chip" id="chipB"></span>
+      <span class="meta"><span class="name">Afterimage</span><br><span class="hex" id="hexB">#000000</span></span>
+    </div>
+  </div>
+
+  <hr>
+
+  <div>
+    <div class="rate-head">
+      <span class="field-label" style="margin-bottom:0">Flicker rate</span>
+      <output id="rateOut">4 frames &middot; 15.0 Hz</output>
+    </div>
+    <input type="range" id="rate" min="0" max="1000" step="1" value="267" aria-label="Flicker rate, snapped to whole frames of your display">
+    <div id="measuredOut"></div>
+  </div>
+
+  <button id="toggle" type="button" aria-pressed="false">
+    <svg id="toggleIcon" viewBox="0 0 24 24" fill="none" stroke="none"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>
+    <span id="toggleLabel">Play</span>
+  </button>
+
+  <p class="caption">Staring at a color fatigues that hue's cone response; looking away, the eye briefly reports the opponent color. This approximates that afterimage as the RGB inverse of your selection &mdash; hue rotated 180&deg;, lightness mirrored.</p>
+  <p class="caption">Past roughly 15&ndash;60&nbsp;Hz (the exact point depends on contrast and the viewer), alternating colors stop reading as two colors and fuse into one blended hue by temporal summation &mdash; the Talbot&ndash;Plateau law, the same effect behind a spinning color top. This panel measured your display at <strong id="refreshOut">~60&nbsp;Hz</strong> and holds each color for a whole number of frames, so the rate only lands on clean divisions of that &mdash; 60, 30, 20, 15, 12&nbsp;Hz and so on &mdash; instead of drifting between uneven frame counts. <strong>Note:</strong> large-area flicker can trigger seizures in people with photosensitive epilepsy; WCAG&nbsp;2.3.1 sets the general caution line at 3&nbsp;Hz.</p>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  function hslToRgb(h, s, l){
+    h = ((h % 360) + 360) % 360;
+    const c = (1 - Math.abs(2 * l - 1)) * s;
+    const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+    const m = l - c / 2;
+    let r1, g1, b1;
+    if (h < 60)      { r1 = c; g1 = x; b1 = 0; }
+    else if (h < 120){ r1 = x; g1 = c; b1 = 0; }
+    else if (h < 180){ r1 = 0; g1 = c; b1 = x; }
+    else if (h < 240){ r1 = 0; g1 = x; b1 = c; }
+    else if (h < 300){ r1 = x; g1 = 0; b1 = c; }
+    else             { r1 = c; g1 = 0; b1 = x; }
+    return [
+      Math.round((r1 + m) * 255),
+      Math.round((g1 + m) * 255),
+      Math.round((b1 + m) * 255)
+    ];
+  }
+
+  function toHex(rgb){
+    return "#" + rgb.map(function(v){ return v.toString(16).padStart(2, "0"); }).join("").toUpperCase();
+  }
+
+  const stage = document.getElementById("stage");
+  const hint = document.getElementById("hint");
+  const canvas = document.getElementById("wheel");
+  const ctx = canvas.getContext("2d");
+  const rateInput = document.getElementById("rate");
+  const rateOut = document.getElementById("rateOut");
+  const toggleBtn = document.getElementById("toggle");
+  const toggleIcon = document.getElementById("toggleIcon");
+  const toggleLabel = document.getElementById("toggleLabel");
+  const chipA = document.getElementById("chipA");
+  const chipB = document.getElementById("chipB");
+  const hexA = document.getElementById("hexA");
+  const hexB = document.getElementById("hexB");
+
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const cssSize = 168;
+  const px = Math.round(cssSize * dpr);
+  canvas.width = px;
+  canvas.height = px;
+  const center = px / 2;
+  const margin = 3 * dpr;
+  const radius = center - margin;
+
+  // Precompute the static hue/saturation wheel once.
+  const wheelBmp = document.createElement("canvas");
+  wheelBmp.width = px;
+  wheelBmp.height = px;
+  (function buildWheel(){
+    const bctx = wheelBmp.getContext("2d");
+    const img = bctx.createImageData(px, px);
+    const data = img.data;
+    for (let y = 0; y < px; y++){
+      for (let x = 0; x < px; x++){
+        const dx = x - center, dy = y - center;
+        const r = Math.sqrt(dx * dx + dy * dy);
+        const idx = (y * px + x) * 4;
+        if (r > radius + 1){
+          data[idx + 3] = 0;
+          continue;
+        }
+        let ang = Math.atan2(dy, dx);
+        if (ang < 0) ang += Math.PI * 2;
+        const hue = ang * 180 / Math.PI;
+        const sat = Math.min(r / radius, 1);
+        const rgb = hslToRgb(hue, sat, 0.5);
+        data[idx] = rgb[0];
+        data[idx + 1] = rgb[1];
+        data[idx + 2] = rgb[2];
+        data[idx + 3] = r > radius - dpr ? Math.max(0, 255 * (radius + 1 - r) / (1 + dpr)) : 255;
+      }
+    }
+    bctx.putImageData(img, 0, 0);
+  })();
+
+  const state = { hue: 205, sat: 0.82 };
+  let dragging = false;
+  let colors = ["#000000", "#000000"];
+
+  function markerPos(hueDeg, sat){
+    const rad = hueDeg * Math.PI / 180;
+    const r = sat * radius;
+    return [center + Math.cos(rad) * r, center + Math.sin(rad) * r];
+  }
+
+  function drawWheel(){
+    ctx.clearRect(0, 0, px, px);
+    ctx.drawImage(wheelBmp, 0, 0);
+
+    const [ax, ay] = markerPos(state.hue, state.sat);
+    const bx = center * 2 - ax;
+    const by = center * 2 - ay;
+
+    ctx.beginPath();
+    ctx.moveTo(ax, ay);
+    ctx.lineTo(bx, by);
+    ctx.strokeStyle = "rgba(255,255,255,0.35)";
+    ctx.lineWidth = 1 * dpr;
+    ctx.stroke();
+
+    // Afterimage marker (hollow, dashed)
+    ctx.beginPath();
+    ctx.setLineDash([4 * dpr, 3 * dpr]);
+    ctx.arc(bx, by, 8 * dpr, 0, Math.PI * 2);
+    ctx.fillStyle = colors[1];
+    ctx.fill();
+    ctx.lineWidth = 2 * dpr;
+    ctx.strokeStyle = "rgba(255,255,255,0.85)";
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Selected marker (solid ring)
+    ctx.beginPath();
+    ctx.arc(ax, ay, 10 * dpr, 0, Math.PI * 2);
+    ctx.fillStyle = colors[0];
+    ctx.fill();
+    ctx.lineWidth = 3 * dpr;
+    ctx.strokeStyle = "rgba(255,255,255,0.95)";
+    ctx.shadowColor = "rgba(0,0,0,0.5)";
+    ctx.shadowBlur = 4 * dpr;
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+  }
+
+  let phase = 0;
+  function applyStageColor(){
+    stage.style.backgroundColor = colors[phase];
+  }
+
+  function recompute(){
+    const rgbA = hslToRgb(state.hue, state.sat, 0.5);
+    const rgbB = hslToRgb(state.hue + 180, state.sat, 0.5);
+    colors = [toHex(rgbA), toHex(rgbB)];
+    chipA.style.background = colors[0];
+    chipB.style.background = colors[1];
+    hexA.textContent = colors[0];
+    hexB.textContent = colors[1];
+    drawWheel();
+    applyStageColor();
+  }
+
+  function posFromEvent(e){
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    return {
+      x: (e.clientX - rect.left) * scaleX,
+      y: (e.clientY - rect.top) * scaleY
+    };
+  }
+
+  function updateFromPos(x, y){
+    const dx = x - center, dy = y - center;
+    let ang = Math.atan2(dy, dx);
+    if (ang < 0) ang += Math.PI * 2;
+    state.hue = ang * 180 / Math.PI;
+    state.sat = Math.min(Math.sqrt(dx * dx + dy * dy) / radius, 1);
+    recompute();
+  }
+
+  canvas.addEventListener("pointerdown", function(e){
+    dragging = true;
+    canvas.classList.add("dragging");
+    try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
+    const p0 = posFromEvent(e);
+    updateFromPos(p0.x, p0.y);
+  });
+  canvas.addEventListener("pointermove", function(e){
+    if (!dragging) return;
+    const p = posFromEvent(e);
+    updateFromPos(p.x, p.y);
+  });
+  window.addEventListener("pointerup", function(){
+    dragging = false;
+    canvas.classList.remove("dragging");
+  });
+
+  // Keyboard control on the wheel: arrow keys nudge hue/saturation.
+  canvas.tabIndex = 0;
+  canvas.addEventListener("keydown", function(e){
+    let handled = true;
+    if (e.key === "ArrowRight") state.hue += 5;
+    else if (e.key === "ArrowLeft") state.hue -= 5;
+    else if (e.key === "ArrowUp") state.sat = Math.min(1, state.sat + 0.04);
+    else if (e.key === "ArrowDown") state.sat = Math.max(0, state.sat - 0.04);
+    else handled = false;
+    if (handled){ e.preventDefault(); recompute(); }
+  });
+
+  // Playback is locked to actual display frames, not wall-clock time.
+  // Each color holds for a whole number of requestAnimationFrame ticks
+  // (one tick = one vsync), so the rate can only land on clean divisions
+  // of the display's real refresh rate -- no uneven "3 on, 2 off" beating
+  // between a millisecond timer and a frame-quantized screen.
+  const N_MIN = 1;
+  const N_MAX = 180;
+  const measuredOut = document.getElementById("measuredOut");
+  const refreshOut = document.getElementById("refreshOut");
+
+  let measuredRefreshHz = 60; // refined once the calibration below finishes
+
+  function nFromRaw(raw){
+    const t = raw / 1000;
+    const n = Math.round(N_MIN * Math.pow(N_MAX / N_MIN, t));
+    return Math.min(N_MAX, Math.max(N_MIN, n));
+  }
+  function rawFromN(n){
+    return Math.round(1000 * Math.log(n / N_MIN) / Math.log(N_MAX / N_MIN));
+  }
+
+  let framesPerPhase = nFromRaw(parseFloat(rateInput.value));
+
+  function updateRateOut(){
+    const hz = measuredRefreshHz / framesPerPhase;
+    rateOut.textContent = framesPerPhase + (framesPerPhase === 1 ? " frame · " : " frames · ") + hz.toFixed(1) + " Hz";
+  }
+
+  // Measure the real refresh rate by averaging rAF intervals, then snap
+  // the display to the nearest common panel rate if it's close to one.
+  (function calibrateRefreshRate(){
+    const COMMON = [24, 30, 48, 50, 60, 72, 75, 90,100, 120, 144, 165, 180, 240];
+    let last = null, total = 0, count = 0;
+    const samples = 45;
+    function step(now){
+      if (last != null) { total += now - last; count++; }
+      last = now;
+      if (count < samples) { requestAnimationFrame(step); return; }
+      const raw = 1000 / (total / count);
+      let snapped = raw;
+      for (const c of COMMON){ if (Math.abs(raw - c) / c < 0.03) { snapped = c; break; } }
+      measuredRefreshHz = snapped;
+      refreshOut.textContent = "~" + Math.round(snapped) + " Hz";
+      updateRateOut();
+    }
+    requestAnimationFrame(step);
+  })();
+
+  let playing = false;
+  let rafId = null;
+  let frameCounter = 0;
+  let lastFlipTime = 0;
+  let smoothedIntervalMs = null;
+  let measureTimer = null;
+
+  function frameLoop(now){
+    frameCounter++;
+    if (frameCounter >= framesPerPhase){
+      frameCounter = 0;
+      phase = 1 - phase;
+      applyStageColor();
+      const elapsed = now - lastFlipTime;
+      smoothedIntervalMs = smoothedIntervalMs == null ? elapsed : smoothedIntervalMs * 0.85 + elapsed * 0.15;
+      lastFlipTime = now;
+    }
+    rafId = requestAnimationFrame(frameLoop);
+  }
+
+  function updateMeasured(){
+    if (!playing || smoothedIntervalMs == null){
+      measuredOut.textContent = "";
+      return;
+    }
+    const measuredHz = 1000 / smoothedIntervalMs;
+    measuredOut.textContent = "measured ≈ " + measuredHz.toFixed(1) + " Hz";
+  }
+
+  function setPlaying(next){
+    playing = next;
+    toggleBtn.setAttribute("aria-pressed", String(playing));
+    toggleLabel.textContent = playing ? "Pause" : "Play";
+    toggleIcon.innerHTML = playing
+      ? '<rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor"/>'
+      : '<path d="M8 5v14l11-7z" fill="currentColor"/>';
+    hint.classList.toggle("playing", playing);
+    cancelAnimationFrame(rafId);
+    clearInterval(measureTimer);
+    if (playing){
+      smoothedIntervalMs = null;
+      frameCounter = 0;
+      lastFlipTime = performance.now();
+      rafId = requestAnimationFrame(frameLoop);
+      measureTimer = setInterval(updateMeasured, 200);
+    } else {
+      phase = 0;
+      applyStageColor();
+      updateMeasured();
+    }
+  }
+
+  toggleBtn.addEventListener("click", function(){ setPlaying(!playing); });
+  stage.addEventListener("click", function(){ setPlaying(!playing); });
+  stage.addEventListener("keydown", function(e){
+    if (e.key === " " || e.key === "Enter"){ e.preventDefault(); setPlaying(!playing); }
+  });
+
+  rateInput.addEventListener("input", function(){
+    framesPerPhase = nFromRaw(parseFloat(rateInput.value));
+    updateRateOut();
+  });
+
+  updateRateOut();
+  recompute();
+  setPlaying(false);
+})();
+</script>
+
+</body></html>
