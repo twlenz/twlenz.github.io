@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <url>
+       <loc>https://twlenz.github.io/</loc>
+       <lastmod>2026-10-12T16:52:23+00:00</lastmod>
+       <priority>1.0000</priority>
+  </url>
+  <url>
+       <loc>https://twlenz.github.io/braggy-things.html</loc>
+       <lastmod>2026-10-12T16:52:23+00:00</lastmod>
+       <priority>0.8000</priority>
+  </url>
+  <url>
+       <loc>https://twlenz.github.io/cool-projects.html</loc>
+       <lastmod>2026-10-12T16:52:24+00:00</lastmod>
+       <priority>0.8000</priority>
+  </url>
+  <url>
+       <loc>https://twlenz.github.io/links.html</loc>
+       <lastmod>2026-10-12T16:52:23+00:00</lastmod>
+       <priority>0.8000</priority>
+  </url>
+  <url>
+       <loc>https://twlenz.github.io/secret.html</loc>
+       <lastmod>2026-10-12T16:52:23+00:00</lastmod>
+       <priority>0.8000</priority>
+  </url>
+  <url>
+       <loc>https://twlenz.github.io/files/cv.pdf</loc>
+       <lastmod>2026-10-12T16:52:23+00:00</lastmod>
+       <priority>0.6400</priority>
+  </url>
+  <url>
+       <loc>https://twlenz.github.io/projects/flasher.html</loc>
+       <lastmod>2026-10-12T16:52:23+00:00</lastmod>
+       <priority>0.6400</priority>
+  </url>
+  <url>
+       <loc>https://twlenz.github.io/projects/galaxy_trucker.html</loc>
+       <lastmod>2026-10-12T16:52:23+00:00</lastmod>
+       <priority>0.6400</priority>
+  </url>
+  <url>
+       <loc>https://twlenz.github.io/projects/seating_chart_optimizer.html</loc>
+       <lastmod>2026-10-12T16:52:23+00:00</lastmod>
+       <priority>0.6400</priority>
+  </url>
+  <url>
+       <loc>https://twlenz.github.io/index.html</loc>
+       <lastmod>2026-10-12T16:52:24+00:00</lastmod>
+       <priority>0.6400</priority>
+  </url>
+  <url>
+       <loc>https://twlenz.github.io/files/Galaxy_Trucker_Helpsheet.pdf</loc>
+       <lastmod>2026-10-12T16:52:24+00:00</lastmod>
+       <priority>0.5120</priority>
+  </url>
+  <url>
+       <loc>https://twlenz.github.io/files/Galaxy_Trucker_Report.pdf</loc>
+       <lastmod>2026-10-12T16:52:23+00:00</lastmod>
+       <priority>0.5120</priority>
+  </url>
+</urlset>
