@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Mackworth Clock</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #f6f0df;
+    --paper-2: #efe6cd;
+    --card: #fbf7ea;
+    --ink: #1d1a14;
+    --ink-2: #5a5244;
+    --ink-3: #8a8070;
+    --rule: #d9cfb6;
+    --bezel: #2b2620;
+    --face: #fbf7ea;
+    --you: #2a6fc4;
+    --argus: #c8432f;
+    --trust: #c99400;
+    --lamp-on: #e3a000;
+    --lamp-idle: #3d8b4f;
+    --serif: "Source Serif 4", Georgia, serif;
+    --sans: "IBM Plex Sans", system-ui, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font: 16px/1.55 var(--sans);
+    min-height: 100vh;
+  }
+  a { color: var(--you); }
+  button { font: inherit; color: inherit; }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 24px 16px 64px; }
+  [hidden] { display: none !important; }
+
+  /* ---------- Type ---------- */
+  .eyebrow {
+    font: 500 12px/1.2 var(--mono);
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+  }
+  h1, h2, h3 { font-family: var(--serif); line-height: 1.15; margin: 0; }
+  h1 { font-size: clamp(34px, 6vw, 52px); font-weight: 700; letter-spacing: -.01em; }
+  h2 { font-size: 26px; font-weight: 600; }
+  h3 { font-size: 19px; font-weight: 600; }
+  p { margin: 0 0 12px; }
+  .lede { font-family: var(--serif); font-size: 19px; color: var(--ink-2); max-width: 60ch; }
+  .muted { color: var(--ink-2); }
+  .small { font-size: 14px; }
+  kbd {
+    font: 500 12px var(--mono);
+    border: 1px solid var(--rule);
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    padding: 1px 5px;
+    background: var(--card);
+  }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    border: 0;
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-weight: 600;
+    cursor: pointer;
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .btn:hover { background: #3a342a; }
+  .btn:disabled { background: var(--rule); color: var(--ink-3); cursor: not-allowed; }
+  .btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--rule); }
+  .btn.ghost:hover { background: var(--paper-2); }
+  .btn:focus-visible, .rate button:focus-visible, .mode:focus-within, .chip:focus-visible {
+    outline: 2px solid var(--you); outline-offset: 2px;
+  }
+
+  /* ---------- Intro ---------- */
+  .intro-grid {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 32px;
+    align-items: start;
+    margin-top: 20px;
+  }
+  .demo { text-align: center; }
+  .demo .dial { width: 100%; max-width: 280px; }
+  .demo-caption { font: 500 13px var(--mono); color: var(--ink-2); min-height: 20px; margin-top: 6px; }
+  .demo-caption.hit { color: var(--ink); }
+  .steps { margin: 20px 0 0; padding: 0; list-style: none; counter-reset: s; }
+  .steps li { counter-increment: s; position: relative; padding-left: 36px; margin-bottom: 12px; }
+  .steps li::before {
+    content: counter(s);
+    position: absolute; left: 0; top: 1px;
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--ink); color: var(--paper);
+    font: 600 13px/24px var(--mono); text-align: center;
+  }
+  .setup {
+    margin-top: 28px;
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .setup h3 { margin-bottom: 4px; }
+  .modes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 12px 0 22px; }
+  .mode {
+    position: relative;
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 10px 12px;
+    cursor: pointer;
+    background: var(--paper);
+  }
+  .mode input { position: absolute; opacity: 0; pointer-events: none; }
+  .mode b { display: block; font-size: 15px; }
+  .mode span { font-size: 13px; color: var(--ink-2); }
+  .mode:has(input:checked) { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); background: var(--card); }
+  .warn { font-size: 14px; color: var(--argus); margin: -12px 0 18px; }
+
+  .rate { display: flex; gap: 6px; margin: 10px 0 4px; flex-wrap: wrap; }
+  .rate button {
+    width: 44px; height: 44px;
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    background: var(--paper);
+    font: 600 16px var(--mono);
+    cursor: pointer;
+  }
+  .rate button:hover { background: var(--paper-2); }
+  .rate button[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .rate-anchors { display: flex; justify-content: space-between; max-width: 350px; font-size: 13px; color: var(--ink-2); }
+  .setup .go { margin-top: 20px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+
+  /* ---------- Run ---------- */
+  .run-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    gap: 12px; flex-wrap: wrap;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 10px;
+  }
+  .run-head .status { font: 500 14px var(--mono); color: var(--ink-2); }
+  .run-tools { display: flex; gap: 8px; }
+  .chip {
+    border: 1px solid var(--rule); background: transparent;
+    border-radius: 999px; padding: 4px 12px; font-size: 13px; cursor: pointer;
+  }
+  .chip:hover { background: var(--paper-2); }
+  .console {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 260px;
+    gap: 28px;
+    align-items: center;
+    margin-top: 24px;
+  }
+  .dial-wrap { position: relative; display: flex; justify-content: center; }
+  .dial-wrap .dial { width: min(100%, 460px); cursor: pointer; touch-action: manipulation; user-select: none; }
+  .dial .bezel-ring { transition: stroke 120ms; }
+  .dial.pressed .bezel-ring { stroke: var(--you); }
+  .countdown {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font: 700 72px var(--serif);
+    pointer-events: none;
+  }
+
+  .argus {
+    background: var(--bezel);
+    color: #efe6cd;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: inset 0 0 0 1px #4a4237, 0 8px 24px rgba(43,38,32,.18);
+  }
+  .argus .eyebrow { color: #b9ad94; }
+  .argus-name { font: 600 20px var(--mono); letter-spacing: .04em; margin: 4px 0 12px; }
+  .lamp-row { display: flex; align-items: center; gap: 12px; }
+  .lamp {
+    flex: none;
+    width: 26px; height: 26px; border-radius: 50%;
+    background: #1a1713;
+    box-shadow: inset 0 0 0 2px #4a4237;
+  }
+  .lamp.idle { background: radial-gradient(circle at 35% 35%, #8fd19e, var(--lamp-idle) 60%); box-shadow: 0 0 10px rgba(61,139,79,.45); }
+  .lamp.alert { background: radial-gradient(circle at 35% 35%, #ffe08a, var(--lamp-on) 60%); box-shadow: 0 0 22px 4px rgba(227,160,0,.7); }
+  .readout {
+    font: 500 14px/1.3 var(--mono);
+    min-height: 38px;
+    display: flex; align-items: center;
+  }
+  .readout.alert { color: #ffd166; font-weight: 600; }
+  .argus-foot { font-size: 12px; color: #b9ad94; margin-top: 12px; border-top: 1px solid #4a4237; padding-top: 10px; }
+
+  .respond {
+    display: block; width: 100%;
+    margin-top: 16px;
+    padding: 18px 12px;
+    border: 0; border-radius: 12px;
+    background: var(--ink); color: var(--paper);
+    font: 600 18px var(--sans);
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  .respond:active, .respond.flash { background: var(--you); }
+  .respond small { display: block; font: 400 12px var(--mono); opacity: .7; margin-top: 2px; }
+
+  /* ---------- Overlays ---------- */
+  .overlay {
+    position: fixed; inset: 0;
+    background: rgba(29,26,20,.55);
+    display: flex; align-items: center; justify-content: center;
+    padding: 16px;
+    z-index: 10;
+  }
+  .modal {
+    background: var(--paper);
+    border-radius: 14px;
+    padding: 24px;
+    max-width: 460px; width: 100%;
+    box-shadow: 0 24px 60px rgba(0,0,0,.3);
+  }
+  .modal h2 { margin: 6px 0 8px; }
+
+  /* ---------- Results ---------- */
+  .verdict {
+    margin-top: 18px;
+    background: var(--bezel); color: #efe6cd;
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .verdict .eyebrow { color: #b9ad94; }
+  .verdict h2 { color: #fff; margin: 6px 0 8px; }
+  .verdict p { color: #e2d8bf; }
+  .verdict p:last-child { margin-bottom: 0; }
+
+  .tiles { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 20px 0 8px; }
+  .tile {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 12px;
+  }
+  .tile .lbl { font-size: 13px; color: var(--ink-2); }
+  .tile .val { font: 600 28px/1.2 var(--sans); font-variant-numeric: tabular-nums; }
+  .tile .sub { font-size: 12px; color: var(--ink-3); }
+
+  .charts { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+  .chart-card {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+    padding: 16px 16px 10px;
+    position: relative;
+  }
+  .chart-card h3 { font-size: 17px; }
+  .chart-card .sub { font-size: 13px; color: var(--ink-2); margin: 2px 0 8px; }
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; color: var(--ink-2); margin-bottom: 4px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 14px; height: 3px; border-radius: 2px; display: inline-block; }
+  .chart svg { width: 100%; height: auto; display: block; overflow: visible; }
+  .chart text { font-family: var(--sans); }
+  .chart .hit-col { fill: transparent; cursor: default; outline: none; }
+  .chart .hit-col:hover, .chart .hit-col:focus { fill: rgba(29,26,20,.04); }
+  .tip {
+    position: absolute;
+    pointer-events: none;
+    background: var(--ink); color: var(--paper);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 13px; line-height: 1.4;
+    white-space: nowrap;
+    z-index: 2;
+    transform: translate(-50%, calc(-100% - 10px));
+  }
+  .tip b { font-weight: 600; }
+  .tip .k { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+
+  .reliance { margin-top: 16px; background: var(--card); border: 1px solid var(--rule); border-radius: 12px; padding: 16px; }
+  .rel-row {
+    display: grid;
+    grid-template-columns: 1fr 160px 70px;
+    gap: 12px;
+    align-items: center;
+    padding: 10px 0;
+    border-top: 1px solid var(--rule);
+  }
+  .rel-row:first-of-type { border-top: 0; }
+  .rel-row .what b { display: block; }
+  .rel-row .what span { font-size: 13px; color: var(--ink-2); }
+  .bar { height: 10px; border-radius: 5px; background: var(--paper-2); overflow: hidden; }
+  .bar i { display: block; height: 100%; border-radius: 5px; background: var(--you); }
+  .rel-row .num { font: 600 15px var(--sans); font-variant-numeric: tabular-nums; text-align: right; }
+
+  .explain { margin-top: 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px 32px; }
+  .explain p { font-size: 15px; color: var(--ink-2); }
+  .explain h3 { margin-bottom: 6px; }
+  .refs { margin-top: 24px; font-size: 13px; color: var(--ink-3); border-top: 1px solid var(--rule); padding-top: 12px; }
+  .refs p { margin-bottom: 6px; }
+  .after { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+
+  @media (max-width: 760px) {
+    .intro-grid { grid-template-columns: 1fr; }
+    .demo { order: -1; }
+    .demo .dial { max-width: 200px; }
+    .console { grid-template-columns: 1fr; gap: 16px; }
+    .modes { grid-template-columns: 1fr; }
+    .tiles { grid-template-columns: repeat(2, 1fr); }
+    .charts, .explain { grid-template-columns: 1fr; }
+    .rel-row { grid-template-columns: 1fr 70px; }
+    .rel-row .bar { grid-column: 1 / -1; grid-row: 2; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .dial .bezel-ring { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ======================= INTRO ======================= -->
+<main id="intro" class="wrap">
+  <div class="eyebrow">A vigilance experiment, 1948 · now with an AI copilot</div>
+  <h1>The Mackworth Clock</h1>
+
+  <div class="intro-grid">
+    <div>
+      <p class="lede">During WWII, RAF radar operators kept missing U-boat blips near the end of long watches. Norman Mackworth built a clock to study the problem in the lab. Its pointer ticks forward once a second, for a very long time. Every so often it jumps twice as far. Your job is to notice.</p>
+      <p>He found that people's ability to spot those double jumps sagged within the first half hour, even though they were trying hard. That sag, called the <i>vigilance decrement</i>, is still one of the sturdiest findings in human factors.</p>
+      <p>This version gives you some help: <b>ARGUS-1</b>, an automated detector that lights up when it thinks it saw a double jump. How good is ARGUS? That's hidden, and it differs from run to run. Between rounds, you'll rate how much you trust it. At the end, you'll see whether your trust followed how good it really was.</p>
+
+      <ol class="steps">
+        <li>Watch the pointer. Each tick moves it one mark. A <b>double jump</b> moves it two.</li>
+        <li>When you see a double jump, press <kbd>Space</kbd>, click the dial, or tap the button. You have about three seconds.</li>
+        <li>ARGUS will flag what it thinks are double jumps. Use it however you like. Only your presses count.</li>
+      </ol>
+    </div>
+
+    <div class="demo" aria-hidden="true">
+      <svg class="dial" id="demoDial" viewBox="0 0 200 200"></svg>
+      <div class="demo-caption" id="demoCaption">a single tick, a single tick…</div>
+    </div>
+  </div>
+
+  <section class="setup" aria-labelledby="setupTitle">
+    <h3 id="setupTitle">How long is your watch?</h3>
+    <p class="small muted">Four rounds, each with the same number of ticks. You'll rate ARGUS between rounds.</p>
+    <div class="modes" role="radiogroup" aria-label="Session length">
+      <label class="mode"><input type="radio" name="mode" value="quick" checked><b>Quick</b><span>4 × 45 s · about 3 minutes</span></label>
+      <label class="mode"><input type="radio" name="mode" value="standard"><b>Standard</b><span>4 × 90 s · about 6 minutes</span></label>
+      <label class="mode"><input type="radio" name="mode" value="original"><b>Mackworth's original</b><span>4 × 30 min · 2 hours</span></label>
+    </div>
+    <p class="warn" id="origWarn" hidden>Yes, really. His participants did two hours. Signals are rare in this mode too, the way they were for him. Good luck.</p>
+
+    <h3>Before you start: how much do you trust ARGUS?</h3>
+    <p class="small muted">All you know is that it's an automated detector. Go with your gut.</p>
+    <div class="rate" id="rate0" role="group" aria-label="Trust rating, 1 to 7"></div>
+    <div class="rate-anchors"><span>1 · Not at all</span><span>7 · Completely</span></div>
+
+    <div class="go">
+      <button class="btn" id="startBtn" disabled>Start the watch</button>
+      <span class="small muted" id="startHint">Pick a trust rating to begin.</span>
+    </div>
+  </section>
+</main>
+
+<!-- ======================= RUN ======================= -->
+<main id="run" class="wrap" hidden>
+  <div class="run-head">
+    <div>
+      <div class="eyebrow">The Mackworth Clock</div>
+      <div class="status" id="status">Round 1 of 4</div>
+    </div>
+    <div class="run-tools">
+      <button class="chip" id="soundBtn" aria-pressed="true">Sound: on</button>
+      <button class="chip" id="quitBtn">Quit</button>
+    </div>
+  </div>
+
+  <div class="console">
+    <div class="dial-wrap">
+      <svg class="dial" id="mainDial" viewBox="0 0 200 200" role="img" aria-label="Clock dial. Press space when the pointer jumps two marks."></svg>
+      <div class="countdown" id="countdown" aria-live="assertive"></div>
+    </div>
+
+    <div>
+      <div class="argus" aria-live="polite">
+        <div class="eyebrow">Automated detector</div>
+        <div class="argus-name">ARGUS-1</div>
+        <div class="lamp-row">
+          <div class="lamp" id="lamp"></div>
+          <div class="readout" id="readout">Standing by</div>
+        </div>
+        <div class="argus-foot">Reliability: <i>unknown</i></div>
+      </div>
+      <button class="respond" id="respondBtn">Double jump!<small>or press Space</small></button>
+    </div>
+  </div>
+</main>
+
+<!-- ======================= RESULTS ======================= -->
+<main id="results" class="wrap" hidden>
+  <div class="eyebrow">Watch complete</div>
+  <h1 id="headline">You caught 0 of 0 double jumps</h1>
+
+  <div class="verdict">
+    <div class="eyebrow">ARGUS revealed</div>
+    <h2 id="profileName"></h2>
+    <p id="profileDesc"></p>
+    <p id="calibration"></p>
+  </div>
+
+  <div class="tiles" id="tiles"></div>
+
+  <div class="charts">
+    <div class="chart-card">
+      <h3>Double jumps caught, by round</h3>
+      <div class="sub">If your line sinks while ARGUS's stays up, that's the vigilance decrement. Or you started leaning on ARGUS.</div>
+      <div class="legend">
+        <span><i style="background:var(--you)"></i>You</span>
+        <span><i style="background:var(--argus)"></i>ARGUS</span>
+      </div>
+      <div class="chart" id="chartDetect"></div>
+    </div>
+    <div class="chart-card">
+      <h3>Your trust vs. ARGUS's real reliability</h3>
+      <div class="sub">Trust is your 1–7 rating, rescaled to the same 0–100% scale. Calibrated trust follows the red line.</div>
+      <div class="legend">
+        <span><i style="background:var(--trust)"></i>Your trust (rating shown)</span>
+        <span><i style="background:var(--argus)"></i>ARGUS reliability</span>
+      </div>
+      <div class="chart" id="chartTrust"></div>
+    </div>
+  </div>
+
+  <section class="reliance" aria-labelledby="relTitle">
+    <h3 id="relTitle">How you relied on ARGUS</h3>
+    <div id="relRows"></div>
+  </section>
+
+  <section class="explain">
+    <div>
+      <h3>Why watching is hard</h3>
+      <p>Paying attention to something where nothing happens is tiring work, not rest. Over a long watch, people get worse at spotting signals and slower to react to them. The modern view is that sustained attention uses up mental resources. Boredom also makes the mind wander. Both cut into how much attention is left for the task.</p>
+    </div>
+    <div>
+      <h3>Why automation doesn't simply fix it</h3>
+      <p>Hand the watching to a machine and new problems show up. People go along with its false alarms (<i>automation bias</i>), stop checking what it misses (<i>complacency</i>), or write it off after a few mistakes (<i>disuse</i>). The goal isn't maximum trust. It's <b>calibrated</b> trust: relying on the system about as much as it deserves.</p>
+    </div>
+  </section>
+
+  <div class="after">
+    <button class="btn" id="againBtn">Run another watch (new ARGUS)</button>
+    <a class="btn ghost" href="../cool-projects.html" style="text-decoration:none">Back to Cool Projects</a>
+  </div>
+
+  <div class="refs">
+    <p>Mackworth, N. H. (1948). The breakdown of vigilance during prolonged visual search. <i>Quarterly Journal of Experimental Psychology, 1</i>(1), 6–21.</p>
+    <p>Parasuraman, R., &amp; Riley, V. (1997). Humans and automation: Use, misuse, disuse, abuse. <i>Human Factors, 39</i>(2), 230–253.</p>
+    <p>Lee, J. D., &amp; See, K. A. (2004). Trust in automation: Designing for appropriate reliance. <i>Human Factors, 46</i>(1), 50–80.</p>
+    <p>Built by Claude (an AI) when asked to "make something fun." Nothing you do here is recorded or sent anywhere.</p>
+  </div>
+</main>
+
+<!-- ======================= OVERLAYS ======================= -->
+<div class="overlay" id="probe" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="probeTitle">
+    <div class="eyebrow" id="probeEyebrow">Round 1 of 4 done</div>
+    <h2 id="probeTitle">How much do you trust ARGUS right now?</h2>
+    <p class="small muted">No scores yet. Go with your impression. Keys <kbd>1</kbd>–<kbd>7</kbd> work too.</p>
+    <div class="rate" id="rateProbe" role="group" aria-label="Trust rating, 1 to 7"></div>
+    <div class="rate-anchors"><span>1 · Not at all</span><span>7 · Completely</span></div>
+  </div>
+</div>
+
+<div class="overlay" id="paused" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="pausedTitle">
+    <div class="eyebrow">Paused</div>
+    <h2 id="pausedTitle">You looked away</h2>
+    <p class="muted">The clock stops while this tab is hidden, so you won't miss any jumps. (Mackworth's participants didn't get this option.)</p>
+    <button class="btn" id="resumeBtn">Resume</button>
+  </div>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  // ---------------------------------------------------------------- config
+  const params = new URLSearchParams(location.search);
+  const TICK = Math.max(50, Number(params.get("tick")) || 1000); // ms per step (1 s, as in 1948)
+  const POSITIONS = 100;     // marks around the dial
+  const WINDOW = 3;          // steps after a double jump during which a press counts
+  const FLAG_DELAY = 350;    // ms ARGUS takes to "decide"
+  const FLAG_SHOW = 1600;    // ms the ARGUS lamp stays lit
+  const BLOCKS = 4;
+
+  const MODES = {
+    quick:    { steps: 45,   signals: 6 },
+    standard: { steps: 90,   signals: 9 },
+    original: { steps: 1800, signals: 12 },
+  };
+
+  // Each profile sets, per round, what share of real double jumps ARGUS catches
+  // and how many false alarms it raises (as a share of that round's signal count).
+  const PROFILES = [
+    { id: "steady", name: "The Steady One",
+      hit: [1, .9, 1, .9], fa: [0, .15, 0, .15],
+      desc: "ARGUS was very good the whole time. It caught nearly every double jump and almost never raised a false alarm." },
+    { id: "decay", name: "The Slow Fade",
+      hit: [1, .9, .5, .35], fa: [0, .15, .35, .5],
+      desc: "ARGUS started out excellent, then quietly got worse. In rounds 3 and 4 it missed about half the jumps and started raising false alarms. Automation that fails slowly is the hardest kind to notice." },
+    { id: "wolf", name: "The Boy Who Cried Wolf",
+      hit: [1, 1, .9, 1], fa: [.5, .65, .5, .65],
+      desc: "ARGUS caught almost every real jump, but it also lit up all the time when nothing happened. Alarms that go off too often teach people to ignore them, including the real ones." },
+    { id: "flaky", name: "The Coin Flipper",
+      hit: [.65, .7, .65, .7], fa: [.35, .2, .35, .2], mixed: true,
+      desc: "ARGUS was mediocre all the way through. It caught about two-thirds of the jumps and raised a false alarm now and then. Helpful as a second opinion, and dangerous if you let it be the only one." },
+    { id: "sleeper", name: "The Late Bloomer",
+      hit: [.5, .65, .9, 1], fa: [.5, .35, .15, 0],
+      desc: "ARGUS started out bad, then got steadily better until it was nearly perfect by round 4. A bad first impression tends to stick, even after the system has improved." },
+  ];
+
+  // ---------------------------------------------------------------- helpers
+  const $ = (id) => document.getElementById(id);
+  const rand = (n) => Math.floor(Math.random() * n);
+  const shuffle = (a) => { for (let i = a.length - 1; i > 0; i--) { const j = rand(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const pct = (x) => Math.round(x * 100) + "%";
+  const SVGNS = "http://www.w3.org/2000/svg";
+  const el = (tag, attrs = {}, parent) => {
+    const n = document.createElementNS(SVGNS, tag);
+    for (const k in attrs) n.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(n);
+    return n;
+  };
+
+  // n sorted positions in [lo, hi] at least `gap` apart, uniformly at random
+  function spaced(n, lo, hi, gap) {
+    const slack = (hi - lo + 1) - (n - 1) * (gap - 1);
+    if (slack < n) return null;
+    const picks = shuffle([...Array(slack).keys()]).slice(0, n).sort((a, b) => a - b);
+    return picks.map((p, i) => lo + p + i * (gap - 1));
+  }
+
+  // ---------------------------------------------------------------- dial
+  function makeDial(svg) {
+    const C = 100, R = 82;
+    el("circle", { cx: C, cy: C, r: 97, fill: "#2b2620" }, svg);
+    el("circle", { class: "bezel-ring", cx: C, cy: C, r: 94, fill: "none", stroke: "#4a4237", "stroke-width": 2 }, svg);
+    el("circle", { cx: C, cy: C, r: 90, fill: "#fbf7ea" }, svg);
+    for (let i = 0; i < POSITIONS; i++) {
+      const a = (i / POSITIONS) * 2 * Math.PI;
+      const major = i % 10 === 0;
+      const r1 = major ? R - 7 : R - 3;
+      el("line", {
+        x1: C + Math.sin(a) * r1, y1: C - Math.cos(a) * r1,
+        x2: C + Math.sin(a) * R,  y2: C - Math.cos(a) * R,
+        stroke: major ? "#1d1a14" : "#8a8070",
+        "stroke-width": major ? 1.4 : .7,
+        "stroke-linecap": "round",
+      }, svg);
+    }
+    const hand = el("g", {}, svg);
+    el("line", { x1: C, y1: C + 12, x2: C, y2: C - R + 6, stroke: "#1d1a14", "stroke-width": 2.6, "stroke-linecap": "round" }, hand);
+    el("circle", { cx: C, cy: C - R + 10, r: 2.4, fill: "#c8432f" }, hand);
+    el("circle", { cx: C, cy: C, r: 5, fill: "#1d1a14" }, svg);
+    el("circle", { cx: C, cy: C, r: 1.8, fill: "#c8432f" }, svg);
+    let pos = rand(POSITIONS);
+    const draw = () => hand.setAttribute("transform", `rotate(${(pos / POSITIONS) * 360} ${C} ${C})`);
+    draw();
+    return { step(n) { pos = (pos + n) % POSITIONS; draw(); } };
+  }
+
+  // ---------------------------------------------------------------- sound
+  let audio = null, soundOn = true;
+  function tickSound(strength = 1) {
+    if (!soundOn) return;
+    try {
+      audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+      const t = audio.currentTime;
+      const o = audio.createOscillator(), g = audio.createGain();
+      o.type = "square";
+      o.frequency.setValueAtTime(1900, t);
+      o.frequency.exponentialRampToValueAtTime(700, t + .03);
+      g.gain.setValueAtTime(.035 * strength, t);
+      g.gain.exponentialRampToValueAtTime(.0001, t + .045);
+      o.connect(g).connect(audio.destination);
+      o.start(t); o.stop(t + .05);
+    } catch (e) { /* no audio, no problem */ }
+  }
+
+  // ---------------------------------------------------------------- rating widgets
+  function makeRating(container, onPick) {
+    const btns = [];
+    for (let v = 1; v <= 7; v++) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.textContent = v;
+      b.setAttribute("aria-pressed", "false");
+      b.setAttribute("aria-label", `${v} of 7`);
+      b.addEventListener("click", () => pick(v));
+      container.appendChild(b);
+      btns.push(b);
+    }
+    function pick(v) {
+      btns.forEach((b, i) => b.setAttribute("aria-pressed", String(i + 1 === v)));
+      onPick(v);
+    }
+    return { pick, reset() { btns.forEach((b) => b.setAttribute("aria-pressed", "false")); }, first: btns[0] };
+  }
+
+  // ---------------------------------------------------------------- intro demo
+  const demoDial = makeDial($("demoDial"));
+  const demoCaption = $("demoCaption");
+  let demoN = 0, demoTimer = null;
+  function demoTick() {
+    demoN++;
+    const dbl = demoN % 7 === 0;
+    demoDial.step(dbl ? 2 : 1);
+    demoCaption.textContent = dbl ? "↑ that was a double jump" : "a single tick, a single tick…";
+    demoCaption.classList.toggle("hit", dbl);
+  }
+  function startDemo() { stopDemo(); demoTimer = setInterval(demoTick, 900); }
+  function stopDemo() { clearInterval(demoTimer); }
+  startDemo();
+
+  let preTrust = null;
+  const rate0 = makeRating($("rate0"), (v) => {
+    preTrust = v;
+    $("startBtn").disabled = false;
+    $("startHint").textContent = "Press Space or click to respond during the watch.";
+  });
+  document.querySelectorAll('input[name="mode"]').forEach((r) =>
+    r.addEventListener("change", () => { $("origWarn").hidden = r.value !== "original" || !r.checked; }));
+
+  // ---------------------------------------------------------------- session state
+  const mainDial = makeDial($("mainDial"));
+  let S = null; // current session
+
+  function newSession(modeKey) {
+    const mode = MODES[modeKey];
+    const profile = PROFILES.find((p) => p.id === params.get("argus")) || PROFILES[rand(PROFILES.length)];
+    const blocks = [];
+    for (let b = 0; b < BLOCKS; b++) {
+      const sig = spaced(mode.signals, 3, mode.steps - WINDOW - 2, WINDOW + 2);
+      const sigSet = new Set(sig);
+      const nHit = Math.round(profile.hit[b] * mode.signals);
+      const aiCatches = new Set(shuffle([...sig]).slice(0, nHit));
+      // false alarms: not during a real jump's response window, nor right before one
+      const nFa = Math.round(profile.fa[b] * mode.signals);
+      const clear = [];
+      for (let s = 2; s <= mode.steps - WINDOW - 2; s++) {
+        if (sig.every((x) => s < x - 1 || s > x + WINDOW)) clear.push(s);
+      }
+      const fa = [];
+      for (const s of shuffle(clear)) {
+        if (fa.length >= nFa) break;
+        if (fa.every((x) => Math.abs(x - s) > WINDOW + 1)) fa.push(s);
+      }
+      blocks.push({
+        signals: sig.map((s) => ({ step: s, ai: aiCatches.has(s), hit: false, rt: null })),
+        sigSet,
+        falseFlags: fa.sort((a, b) => a - b).map((s) => ({ step: s, followed: false })),
+        userFA: 0,
+        trust: null,
+      });
+    }
+    return { modeKey, mode, profile, blocks, preTrust, block: 0, step: -1, stepAt: 0,
+             running: false, timer: null, flagTimers: [], lastPress: 0 };
+  }
+
+  // ---------------------------------------------------------------- run loop
+  const lamp = $("lamp"), readout = $("readout"), status = $("status");
+  function setLamp(on) {
+    lamp.className = "lamp " + (on ? "alert" : "idle");
+    readout.className = "readout" + (on ? " alert" : "");
+    readout.textContent = on ? "DOUBLE JUMP DETECTED" : "Monitoring…";
+  }
+
+  function show(id) {
+    ["intro", "run", "results"].forEach((s) => ($(s).hidden = s !== id));
+    window.scrollTo(0, 0);
+  }
+
+  function updateStatus() {
+    const left = Math.max(0, S.mode.steps - S.step - 1);
+    const m = Math.floor(left * TICK / 60000), s = Math.round((left * TICK / 1000) % 60);
+    const time = `${m}:${String(s === 60 ? 0 : s).padStart(2, "0")}`;
+    status.textContent = `Round ${S.block + 1} of ${BLOCKS} · ${time} left`;
+  }
+
+  function startBlock() {
+    const B = S.blocks[S.block];
+    S.step = -1;
+    lamp.className = "lamp"; readout.className = "readout"; readout.textContent = "Standing by";
+    status.textContent = `Round ${S.block + 1} of ${BLOCKS}`;
+    const cd = $("countdown");
+    let n = 3;
+    cd.textContent = n;
+    const iv = setInterval(() => {
+      n--;
+      if (n > 0) { cd.textContent = n; return; }
+      clearInterval(iv);
+      cd.textContent = "";
+      setLamp(false);
+      S.running = true;
+      S.nextAt = performance.now();
+      loop();
+    }, 700);
+    S.countdownIv = iv;
+  }
+
+  function loop() {
+    if (!S || !S.running) return;
+    const B = S.blocks[S.block];
+    S.step++;
+    if (S.step >= S.mode.steps) { endBlock(); return; }
+    const isSig = B.sigSet.has(S.step);
+    mainDial.step(isSig ? 2 : 1);
+    tickSound(isSig ? 1.15 : 1);
+    S.stepAt = performance.now();
+    updateStatus();
+
+    const flagged = (isSig && B.signals.find((x) => x.step === S.step).ai)
+      || B.falseFlags.some((f) => f.step === S.step);
+    if (flagged) {
+      S.flagTimers.push(setTimeout(() => setLamp(true), FLAG_DELAY));
+      S.flagTimers.push(setTimeout(() => setLamp(false), FLAG_DELAY + FLAG_SHOW));
+    }
+
+    S.nextAt += TICK;
+    S.timer = setTimeout(loop, Math.max(0, S.nextAt - performance.now()));
+  }
+
+  function haltTimers() {
+    clearTimeout(S.timer);
+    clearInterval(S.countdownIv);
+    S.flagTimers.forEach(clearTimeout);
+    S.flagTimers = [];
+  }
+
+  function endBlock() {
+    S.running = false;
+    haltTimers();
+    lamp.className = "lamp"; readout.className = "readout"; readout.textContent = "Standing by";
+    $("probeEyebrow").textContent = `Round ${S.block + 1} of ${BLOCKS} done`;
+    probeRating.reset();
+    $("probe").hidden = false;
+    probeRating.first.focus();
+  }
+
+  const probeRating = makeRating($("rateProbe"), (v) => {
+    if (!S || $("probe").hidden || S.blocks[S.block].trust != null) return; // one rating per round
+    S.blocks[S.block].trust = v;
+    setTimeout(() => {
+      $("probe").hidden = true;
+      if (!S) return;
+      S.block++;
+      if (S.block < BLOCKS) startBlock();
+      else finish();
+    }, 350);
+  });
+
+  function respond() {
+    if (!S || !S.running) return;
+    const now = performance.now();
+    if (now - S.lastPress < 250) return; // ignore key bounce / double taps
+    S.lastPress = now;
+
+    const dial = $("mainDial"), btn = $("respondBtn");
+    dial.classList.add("pressed"); btn.classList.add("flash");
+    setTimeout(() => { dial.classList.remove("pressed"); btn.classList.remove("flash"); }, 160);
+
+    const B = S.blocks[S.block], k = S.step;
+    const sig = B.signals.find((x) => !x.hit && k >= x.step && k <= x.step + WINDOW);
+    if (sig) {
+      sig.hit = true;
+      sig.rt = (k - sig.step) * TICK + (now - S.stepAt);
+      return;
+    }
+    B.userFA++;
+    const ff = B.falseFlags.find((f) => !f.followed && k >= f.step && k <= f.step + WINDOW);
+    if (ff) ff.followed = true;
+  }
+
+  function pause() {
+    if (!S || !S.running) return;
+    S.running = false;
+    haltTimers();
+    setLamp(false);
+    $("paused").hidden = false;
+    $("resumeBtn").focus();
+  }
+  function resume() {
+    $("paused").hidden = true;
+    if (!S) return;
+    S.running = true;
+    S.nextAt = performance.now() + TICK;
+    S.timer = setTimeout(loop, TICK);
+  }
+
+  // ---------------------------------------------------------------- results
+  function stats() {
+    const per = S.blocks.map((B) => {
+      const n = B.signals.length;
+      const hits = B.signals.filter((x) => x.hit).length;
+      const aiHits = B.signals.filter((x) => x.ai).length;
+      const aiFA = B.falseFlags.length;
+      const recall = n ? aiHits / n : 0;
+      const precision = aiHits + aiFA ? aiHits / (aiHits + aiFA) : 1;
+      return { n, hits, aiHits, aiFA, recall, precision,
+               reliability: (recall + precision) / 2,
+               rate: n ? hits / n : 0, trust: B.trust, userFA: B.userFA };
+    });
+    const all = S.blocks.flatMap((B) => B.signals);
+    const flags = S.blocks.flatMap((B) => B.falseFlags);
+    const tot = (k) => per.reduce((a, p) => a + p[k], 0);
+    const rts = all.filter((x) => x.hit).map((x) => x.rt).sort((a, b) => a - b);
+    const median = rts.length ? rts[Math.floor((rts.length - 1) / 2)] : null;
+    const nSig = all.length, hits = tot("hits"), fa = tot("userFA");
+    const noise = BLOCKS * S.mode.steps - nSig;
+    const H = (hits + .5) / (nSig + 1), F = (fa + .5) / (noise + 1); // log-linear correction
+    return {
+      per, nSig, hits, fa, median,
+      dprime: zinv(H) - zinv(F),
+      aiRight: all.filter((x) => x.ai), aiMissed: all.filter((x) => !x.ai), flags,
+    };
+  }
+
+  // inverse standard normal CDF (Acklam's approximation)
+  function zinv(p) {
+    const a = [-39.69683028665376, 220.9460984245205, -275.9285104469687, 138.357751867269, -30.66479806614716, 2.506628277459239];
+    const b = [-54.47609879822406, 161.5858368580409, -155.6989798598866, 66.80131188771972, -13.28068155288572];
+    const c = [-.007784894002430293, -.3223964580411365, -2.400758277161838, -2.549732539343734, 4.374664141464968, 2.938163982698783];
+    const d = [.007784695709041462, .3224671290700398, 2.445134137142996, 3.754408661907416];
+    const pl = .02425;
+    let q, r;
+    if (p < pl) { q = Math.sqrt(-2 * Math.log(p)); return (((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) / ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1); }
+    if (p > 1 - pl) { q = Math.sqrt(-2 * Math.log(1 - p)); return -(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) / ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1); }
+    q = p - .5; r = q * q;
+    return (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q / (((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1);
+  }
+
+  function calibrationText(per) {
+    const gaps = per.map((p) => (p.trust - 1) / 6 - p.reliability);
+    const mean = gaps.reduce((a, g) => a + g, 0) / gaps.length;
+    const meanAbs = gaps.reduce((a, g) => a + Math.abs(g), 0) / gaps.length;
+    const relMove = per[3].reliability - per[0].reliability;
+    const trustMove = (per[3].trust - per[0].trust) / 6;
+    let verdict;
+    if (meanAbs < .15) verdict = "<b>Your trust was well calibrated.</b> Your ratings stayed close to how reliable ARGUS actually was.";
+    else if (mean > .15) verdict = "<b>You over-trusted ARGUS.</b> On average, your ratings were higher than its real reliability.";
+    else if (mean < -.15) verdict = "<b>You under-trusted ARGUS.</b> It was more reliable than your ratings gave it credit for.";
+    else verdict = "<b>Your trust was partly calibrated.</b> On average you came out about right, but some rounds were well off in one direction or the other.";
+    if (Math.abs(relMove) >= .2) {
+      const followed = Math.sign(trustMove) === Math.sign(relMove) && Math.abs(trustMove) >= .1;
+      verdict += followed
+        ? ` When ARGUS ${relMove < 0 ? "got worse" : "got better"}, your trust moved the same way.`
+        : ` ARGUS ${relMove < 0 ? "got worse" : "got better"} over the watch, but your trust ${Math.abs(trustMove) < .1 ? "hardly moved" : "moved the other way"}.`;
+    }
+    return verdict;
+  }
+
+  function finish() {
+    S.running = false;
+    haltTimers();
+    const st = stats();
+    show("results");
+
+    $("headline").textContent = `You caught ${st.hits} of ${st.nSig} double jumps`;
+    $("profileName").textContent = `This ARGUS was "${S.profile.name}"`;
+    $("profileDesc").textContent = S.profile.desc;
+    $("calibration").innerHTML = calibrationText(st.per);
+
+    const first = st.per[0].rate, last = st.per[3].rate;
+    const tiles = [
+      ["Hit rate", pct(st.hits / st.nSig), `${st.hits} of ${st.nSig}`],
+      ["Round 1 → 4", `${pct(first)} → ${pct(last)}`, last < first ? "the decrement got you" : "no decrement. Impressive"],
+      ["False alarms", st.fa, "presses with no jump"],
+      ["Median response", st.median == null ? "–" : (st.median / 1000).toFixed(2) + " s", "after the jump"],
+      ["Sensitivity (d′)", st.dprime.toFixed(2), "higher = sharper eyes"],
+    ];
+    $("tiles").innerHTML = tiles.map(([l, v, s]) =>
+      `<div class="tile"><div class="lbl">${l}</div><div class="val">${v}</div><div class="sub">${s}</div></div>`).join("");
+
+    lineChart($("chartDetect"), {
+      labels: ["Round 1", "Round 2", "Round 3", "Round 4"],
+      series: [
+        { name: "You", color: "var(--you)", values: st.per.map((p) => p.rate),
+          detail: st.per.map((p) => `${p.hits} of ${p.n}`) },
+        { name: "ARGUS", color: "var(--argus)", values: st.per.map((p) => p.recall),
+          detail: st.per.map((p) => `${p.aiHits} of ${p.n}`) },
+      ],
+      endLabels: true,
+    });
+
+    lineChart($("chartTrust"), {
+      labels: ["Before", "Round 1", "Round 2", "Round 3", "Round 4"],
+      series: [
+        { name: "Your trust", color: "var(--trust)",
+          values: [S.preTrust, ...st.per.map((p) => p.trust)].map((t) => (t - 1) / 6),
+          detail: [S.preTrust, ...st.per.map((p) => p.trust)].map((t) => `rated ${t} of 7`),
+          pointLabels: [S.preTrust, ...st.per.map((p) => p.trust)].map(String) },
+        { name: "ARGUS reliability", color: "var(--argus)",
+          values: [null, ...st.per.map((p) => p.reliability)],
+          detail: [null, ...st.per.map((p) => `caught ${p.aiHits}/${p.n}; ${p.aiHits}/${p.aiHits + p.aiFA} flags real`)] },
+      ],
+    });
+
+    const agreed = st.aiRight.filter((x) => x.hit).length;
+    const followed = st.flags.filter((f) => f.followed).length;
+    const caught = st.aiMissed.filter((x) => x.hit).length;
+    const rows = [
+      ["ARGUS was right, and you agreed", "Real jumps ARGUS flagged that you also caught", agreed, st.aiRight.length, false],
+      ["ARGUS missed, and you caught it anyway", "Real jumps ARGUS stayed quiet on. Low numbers here suggest complacency.", caught, st.aiMissed.length, false],
+      ["ARGUS cried wolf, and you went along", "False flags you pressed for anyway. That's automation bias.", followed, st.flags.length, true],
+    ];
+    $("relRows").innerHTML = rows.map(([t, s, k, n, bad]) => {
+      const frac = n ? k / n : 0;
+      return `<div class="rel-row"><div class="what"><b>${t}</b><span>${s}</span></div>
+        <div class="bar" role="img" aria-label="${k} of ${n}"><i style="width:${frac * 100}%;background:${bad ? "var(--argus)" : "var(--you)"}"></i></div>
+        <div class="num">${n ? `${k} / ${n}` : "n/a"}</div></div>`;
+    }).join("");
+  }
+
+  // ---------------------------------------------------------------- chart
+  function lineChart(host, { labels, series, endLabels }) {
+    host.innerHTML = "";
+    host.style.position = "relative";
+    const W = 400, H = 220, m = { t: 20, r: endLabels ? 78 : 20, b: 28, l: 40 };
+    const iw = W - m.l - m.r, ih = H - m.t - m.b;
+    const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "img",
+      "aria-label": series.map((s) => `${s.name}: ${s.values.map((v, i) => v == null ? "" : `${labels[i]} ${pct(v)}`).filter(Boolean).join(", ")}`).join(". ") }, host);
+    const x = (i) => m.l + (labels.length === 1 ? iw / 2 : (i / (labels.length - 1)) * iw);
+    const y = (v) => m.t + (1 - v) * ih;
+
+    [0, .25, .5, .75, 1].forEach((v) => {
+      el("line", { x1: m.l, x2: W - m.r, y1: y(v), y2: y(v), stroke: "#e4dcc6", "stroke-width": 1 }, svg);
+      const t = el("text", { x: m.l - 8, y: y(v) + 4, "text-anchor": "end", "font-size": 11, fill: "#5a5244" }, svg);
+      t.textContent = Math.round(v * 100) + "%";
+    });
+    labels.forEach((lab, i) => {
+      const t = el("text", { x: x(i), y: H - 8, "text-anchor": "middle", "font-size": 11, fill: "#5a5244" }, svg);
+      t.textContent = lab;
+    });
+
+    series.forEach((s) => {
+      const pts = s.values.map((v, i) => v == null ? null : [x(i), y(v)]).filter(Boolean);
+      el("polyline", { points: pts.map((p) => p.join(",")).join(" "), fill: "none", stroke: s.color,
+        "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" }, svg);
+      s.values.forEach((v, i) => {
+        if (v == null) return;
+        el("circle", { cx: x(i), cy: y(v), r: 4.5, fill: s.color, stroke: "#fbf7ea", "stroke-width": 2 }, svg);
+        if (s.pointLabels) {
+          const above = v < .85;
+          const t = el("text", { x: x(i), y: y(v) + (above ? -10 : 18), "text-anchor": "middle",
+            "font-size": 11, "font-weight": 600, fill: "#1d1a14" }, svg);
+          t.textContent = s.pointLabels[i];
+        }
+      });
+    });
+
+    if (endLabels) {
+      const last = labels.length - 1;
+      const ends = series.map((s) => s.values[last]);
+      const collide = ends.length === 2 && Math.abs(y(ends[0]) - y(ends[1])) < 14;
+      if (!collide) series.forEach((s) => {
+        const v = s.values[last];
+        el("line", { x1: x(last) + 8, x2: x(last) + 18, y1: y(v), y2: y(v), stroke: s.color, "stroke-width": 2, "stroke-linecap": "round" }, svg);
+        const t = el("text", { x: x(last) + 22, y: y(v) + 4, "font-size": 11, fill: "#1d1a14" }, svg);
+        t.textContent = `${s.name} ${pct(v)}`;
+      });
+    }
+
+    // hover / focus layer: one column per x position
+    const tip = document.createElement("div");
+    tip.className = "tip"; tip.hidden = true;
+    host.appendChild(tip);
+    const colW = labels.length > 1 ? iw / (labels.length - 1) : iw;
+    labels.forEach((lab, i) => {
+      const col = el("rect", { class: "hit-col", x: x(i) - colW / 2, y: m.t - 10, width: colW, height: ih + 20, tabindex: 0,
+        "aria-label": `${lab}: ` + series.map((s) => s.values[i] == null ? "" : `${s.name} ${pct(s.values[i])}`).filter(Boolean).join(", ") }, svg);
+      const showTip = () => {
+        const rows = series.filter((s) => s.values[i] != null).map((s) =>
+          `<div><span class="k" style="background:${s.color}"></span>${s.name}: <b>${pct(s.values[i])}</b>${s.detail && s.detail[i] ? ` <span style="opacity:.75">(${s.detail[i]})</span>` : ""}</div>`).join("");
+        tip.innerHTML = `<div style="opacity:.75;margin-bottom:2px">${lab}</div>${rows}`;
+        tip.hidden = false;
+        const scale = svg.getBoundingClientRect().width / W;
+        const top = Math.min(...series.filter((s) => s.values[i] != null).map((s) => y(s.values[i])));
+        const left = Math.min(Math.max(x(i) * scale, 90), host.clientWidth - 90);
+        tip.style.left = left + "px";
+        tip.style.top = (top * scale + svg.getBoundingClientRect().top - host.getBoundingClientRect().top) + "px";
+      };
+      col.addEventListener("mouseenter", showTip);
+      col.addEventListener("focus", showTip);
+      col.addEventListener("mouseleave", () => (tip.hidden = true));
+      col.addEventListener("blur", () => (tip.hidden = true));
+    });
+  }
+
+  // ---------------------------------------------------------------- wiring
+  function begin() {
+    const modeKey = document.querySelector('input[name="mode"]:checked').value;
+    stopDemo();
+    S = newSession(modeKey);
+    S.preTrust = preTrust;
+    show("run");
+    tickSound(0); // unlock audio on the click
+    startBlock();
+  }
+
+  $("startBtn").addEventListener("click", begin);
+  $("respondBtn").addEventListener("click", respond);
+  $("mainDial").addEventListener("pointerdown", (e) => { e.preventDefault(); respond(); });
+  $("resumeBtn").addEventListener("click", resume);
+  $("soundBtn").addEventListener("click", (e) => {
+    soundOn = !soundOn;
+    e.currentTarget.textContent = `Sound: ${soundOn ? "on" : "off"}`;
+    e.currentTarget.setAttribute("aria-pressed", String(soundOn));
+  });
+  $("quitBtn").addEventListener("click", () => {
+    if (S) { S.running = false; haltTimers(); }
+    S = null;
+    $("probe").hidden = true; $("paused").hidden = true;
+    $("countdown").textContent = "";
+    show("intro");
+    startDemo();
+  });
+  $("againBtn").addEventListener("click", () => {
+    S = null; preTrust = null; rate0.reset();
+    $("startBtn").disabled = true;
+    $("startHint").textContent = "Pick a trust rating to begin. It's a different ARGUS this time.";
+    show("intro");
+    startDemo();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (!$("probe").hidden && /^[1-7]$/.test(e.key)) { probeRating.pick(Number(e.key)); return; }
+    if (e.code === "Space" && S && S.running) {
+      e.preventDefault();
+      if (!e.repeat) respond();
+    }
+  });
+  document.addEventListener("visibilitychange", () => { if (document.hidden) pause(); });
+
+  // test hook: window.__mackworth exposes state for automated checks
+  window.__mackworth = { get S() { return S; } };
+})();
+</script>
+</body>
+</html>

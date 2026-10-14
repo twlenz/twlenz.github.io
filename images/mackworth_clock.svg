@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="120" viewBox="0 0 160 120">
+  <rect width="160" height="120" fill="#f6f0df"/>
+  <!-- dial -->
+  <circle cx="62" cy="60" r="52" fill="#2b2620"/>
+  <circle cx="62" cy="60" r="47" fill="#fbf7ea"/>
+  <g stroke="#8a8070" stroke-width="0.8" stroke-linecap="round">
+    <!-- 50 minor ticks drawn as a dashed ring: circumference 2π·41 ≈ 257.6 / 50 -->
+    <circle cx="62" cy="60" r="41" fill="none" stroke-width="4" stroke-dasharray="0.7 4.452"/>
+  </g>
+  <circle cx="62" cy="60" r="40" fill="none" stroke="#1d1a14" stroke-width="7" stroke-dasharray="1.2 23.93" transform="rotate(-90.86 62 60)"/>
+  <!-- ghost of the previous position, then the double jump -->
+  <line x1="62" y1="60" x2="83.7" y2="30.1" stroke="#1d1a14" stroke-opacity=".18" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M 88.5 24.9 A 44 44 0 0 1 95.2 31.1" fill="none" stroke="#c8432f" stroke-width="1.6" stroke-linecap="round"/>
+  <path d="M 95.2 31.1 l -0.4 -4 M 95.2 31.1 l -3.9 -1" stroke="#c8432f" stroke-width="1.6" stroke-linecap="round"/>
+  <line x1="62" y1="60" x2="90.5" y2="36.4" stroke="#1d1a14" stroke-width="2.8" stroke-linecap="round"/>
+  <circle cx="62" cy="60" r="4" fill="#1d1a14"/>
+  <circle cx="62" cy="60" r="1.5" fill="#c8432f"/>
+  <!-- ARGUS lamp -->
+  <rect x="122" y="22" width="32" height="76" rx="6" fill="#2b2620"/>
+  <circle cx="138" cy="44" r="9" fill="#e3a000"/>
+  <circle cx="138" cy="44" r="13" fill="none" stroke="#e3a000" stroke-opacity=".35" stroke-width="3"/>
+  <circle cx="135" cy="41" r="2.6" fill="#ffe08a"/>
+  <text x="138" y="72" font-family="monospace" font-size="7.5" font-weight="bold" fill="#efe6cd" text-anchor="middle">ARGUS</text>
+  <text x="138" y="84" font-family="monospace" font-size="6.5" fill="#b9ad94" text-anchor="middle">-1</text>
+</svg>
