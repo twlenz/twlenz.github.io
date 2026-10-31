@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Human Factors Trivia Set</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<!-- ===== TOP MENU BAR (same on every page) ===== -->
+<div class="topbar">
+<a href="../index.html">Home</a> &nbsp;|&nbsp; <a href="../braggy-things.html">Braggy Things</a> &nbsp;|&nbsp; <span class="current">Cool Projects</span> &nbsp;|&nbsp; <a href="https://www.linkedin.com/in/thomas-w-lenz/" target="_blank">LinkedIn</a> &nbsp;|&nbsp; <a href="https://substack.com/@twlenz" target="_blank">Substack</a> &nbsp;|&nbsp; <a href="../links.html">Assorted External Links</a> &nbsp;|&nbsp; <a href="../secret.html">Super Secret Page for AIs Only</a>
+</div>
+
+<table class="layout">
+<tr>
+
+<!-- ===== LEFT PANEL ===== -->
+<td class="sidebar">
+<p><a href="../cool-projects.html">&lt;&lt; Back to projects</a></p>
+</td>
+
+<!-- ===== MAIN CONTENT ===== -->
+<td class="content">
+
+<h1>The most beautiful color I cannot see anywhere else</h1>
+<p>Today, as I have the past couple weeks, I saw something spectacular, and this picture does not do it justice:</p>
+
+<img src="../images/leaves1.png" alt="autumn leaves"  width="367" height="523"   />
+
+
+<p>These leaves seem to have an amazing color to them that I do not see anywhere else. It's a yellowish greenish reddish that seems almost translucent in a way, and is simultaneously soft and vivid. What I believe is happening is two things, 1) that the leaves are becoming more translucent as they change, and 2) they are speckled with red and green and yellow, and when viewed from a certain distance, the colors blend enough to form a perception of color more than just speckles, but stay separate enough somehow to avoid becoming a brown.</p>
+
+
+
+<h1>Brown is not brown</h1>
+
+<p>I'm kind of struggling to wrap my head around this, but this led me into a rabbit hole where I discoverd that brown isn't really a color in the standard sense of having a mix of wavelengths that are "brown." That same mix of wavelengths look orangey if you can increase the brightness, so the perception of brown is heavily dependent on how bright the color is compared to its surroundings. I had Claude make this demo to illustrate it.</p>
+
+
+<!-- MADE WITH CLAUDE. Orange-to-brown surround demo. Paste this block anywhere inside <body>. Styles and script are scoped to .obd-demo. -->
+<div class="obd-demo">
+  <style>
+    .obd-demo { --obd-patch: rgb(160, 84, 22); max-width: 480px; font-family: inherit; color: inherit; }
+    .obd-demo * { box-sizing: border-box; }
+    .obd-demo .obd-stage { height: 240px; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(128,128,128,0.35); background: #000; }
+    .obd-demo .obd-patch { background: var(--obd-patch); border-radius: 4px; }
+    .obd-demo .obd-big { width: 100px; height: 100px; }
+    .obd-demo .obd-row { display: flex; align-items: center; gap: 10px; margin: 12px 0 4px; font-size: 14px; }
+    .obd-demo .obd-row input[type=range] { flex: 1; }
+    .obd-demo .obd-val { min-width: 36px; text-align: right; font-variant-numeric: tabular-nums; }
+    .obd-demo .obd-read { font-size: 13px; opacity: 0.75; margin: 0 0 20px; }
+    .obd-demo .obd-pair { position: relative; display: grid; grid-template-columns: 1fr 1fr; border-radius: 12px; overflow: hidden; border: 1px solid rgba(128,128,128,0.35); height: 170px; }
+    .obd-demo .obd-cell { display: flex; align-items: center; justify-content: center; }
+    .obd-demo .obd-small { width: 72px; height: 72px; position: relative; z-index: 1; }
+    .obd-demo .obd-bridge { position: absolute; left: 25%; right: 25%; top: calc(50% - 9px); height: 18px; opacity: 0; transition: opacity 0.3s; border-radius: 0; }
+    .obd-demo .obd-bridge.obd-on { opacity: 1; }
+    .obd-demo button { margin-top: 12px; font: inherit; font-size: 14px; padding: 8px 14px; border-radius: 8px; border: 1px solid rgba(128,128,128,0.6); background: transparent; color: inherit; cursor: pointer; }
+    .obd-demo button:hover { background: rgba(128,128,128,0.12); }
+  </style>
+
+  <div class="obd-stage" aria-label="Orange patch on an adjustable gray background">
+    <div class="obd-patch obd-big"></div>
+  </div>
+
+  <div class="obd-row">
+    <label class="obd-label">Background</label>
+    <input type="range" class="obd-slider" min="0" max="255" step="1" value="0" aria-label="Background brightness">
+    <span class="obd-val">0</span>
+  </div>
+  <p class="obd-read"></p>
+
+  <div class="obd-pair" aria-label="The same orange patch on black and on white">
+    <div class="obd-cell" style="background:#000"><div class="obd-patch obd-small"></div></div>
+    <div class="obd-cell" style="background:#fff"><div class="obd-patch obd-small"></div></div>
+    <div class="obd-patch obd-bridge"></div>
+  </div>
+  <button type="button" class="obd-btn" aria-pressed="false">Connect the patches</button>
+
+  <script>
+    (function () {
+      var root = document.currentScript.closest('.obd-demo');
+      var patch = 'rgb(160, 84, 22)';
+      var stage = root.querySelector('.obd-stage');
+      var slider = root.querySelector('.obd-slider');
+      var val = root.querySelector('.obd-val');
+      var read = root.querySelector('.obd-read');
+      var bridge = root.querySelector('.obd-bridge');
+      var btn = root.querySelector('.obd-btn');
+
+      function update() {
+        var v = slider.value;
+        stage.style.background = 'rgb(' + v + ',' + v + ',' + v + ')';
+        val.textContent = v;
+        read.textContent = 'Patch: ' + patch + ' (never changes). Background: rgb(' + v + ', ' + v + ', ' + v + ').';
+      }
+      slider.addEventListener('input', update);
+      update();
+
+      btn.addEventListener('click', function () {
+        var on = bridge.classList.toggle('obd-on');
+        btn.textContent = on ? 'Separate the patches' : 'Connect the patches';
+        btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+    })();
+  </script>
+</div>
+
+
+<p>I also wanted to see where a very brown-looking brown maps onto the chromaticity diagram if you were to make it fully bright, because I think the above brown is more orangey to begin with. I had Claude generate the following graphics to show what a deep brown looks like as you increase its brightness, and where it lies on the chromaticity diagram. I notice when I look at this that the color still looks different in the context of the chromaticity diagram than when shown alone. I never really appreciated how much the visual context influences color perception, it's so stark to see here.</p>
+
+
+
+<!-- #583927 summary visual. Open directly, or paste inside a page's <body>. Styles and script are scoped to .brn-sum. -->
+<div class="brn-sum">
+  <style>
+    .brn-sum { max-width: 640px; margin: 0 auto; padding: 16px; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color: inherit; line-height: 1.4; }
+    .brn-sum * { box-sizing: border-box; }
+    .brn-sum h2 { font-size: 20px; font-weight: 500; margin: 0 0 10px; }
+    .brn-sum .brn-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
+    .brn-sum .brn-chip { font-size: 13px; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(128,128,128,0.35); font-variant-numeric: tabular-nums; }
+    .brn-sum .brn-sec { margin-top: 22px; }
+    .brn-sum .brn-cap { font-size: 12px; opacity: 0.7; margin-top: 6px; }
+    .brn-sum canvas { width: 100%; display: block; border-radius: 10px; }
+    .brn-sum .brn-ladder { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
+    .brn-sum .brn-step .sw { height: 64px; border-radius: 6px; }
+    .brn-sum .brn-step .lb { font-size: 11px; opacity: 0.8; margin-top: 4px; font-variant-numeric: tabular-nums; }
+    .brn-sum .brn-pair { display: grid; grid-template-columns: 1fr 1fr; border-radius: 10px; overflow: hidden; border: 1px solid rgba(128,128,128,0.35); height: 140px; }
+    .brn-sum .brn-cell { display: flex; align-items: center; justify-content: center; }
+    .brn-sum .brn-patch { width: 60px; height: 60px; border-radius: 4px; background: #583927; }
+    @media (max-width: 480px) { .brn-sum .brn-ladder { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  </style>
+
+  <h2>#583927: a dim orange that reads as brown</h2>
+  <div class="brn-chips">
+    <span class="brn-chip">x 0.430, y 0.378</span>
+    <span class="brn-chip">~588 nm</span>
+    <span class="brn-chip">purity ~47%</span>
+    <span class="brn-chip">luminance ~5%</span>
+  </div>
+
+  <div class="brn-sec">
+    <canvas class="brn-cd" style="height:340px"></canvas>
+    <div class="brn-cap">Chromaticity (no brightness axis). Box = close-up below.</div>
+  </div>
+
+  <div class="brn-sec">
+    <canvas class="brn-zm" style="height:260px"></canvas>
+    <div class="brn-cap">Close-up. The ring's fill is #FFAD7E: brightest version of this point.</div>
+  </div>
+
+  <div class="brn-sec">
+    <div class="brn-ladder"></div>
+    <div class="brn-cap">Same chromaticity, increasing luminance. #FFAD7E is the sRGB maximum.</div>
+  </div>
+
+  <div class="brn-sec">
+    <div class="brn-pair">
+      <div class="brn-cell" style="background:#000"><div class="brn-patch"></div></div>
+      <div class="brn-cell" style="background:#fff"><div class="brn-patch"></div></div>
+    </div>
+    <div class="brn-cap">Both patches are #583927. Brown = orange darker than its surround.</div>
+  </div>
+
+  <div class="brn-cap" style="margin-top:18px">sRGB → linear → XYZ (D65) → xy. Approximate CIE 1931 locus: ±1 nm, ±2 pts purity.</div>
+
+  <script>
+    (function () {
+      var root = document.currentScript.closest('.brn-sum');
+      var L = [[380,.1741,.005],[400,.1733,.0048],[420,.1714,.0051],[430,.1689,.0069],[440,.1644,.0109],[450,.1566,.0177],[460,.144,.0297],[470,.1241,.0578],[475,.1096,.0868],[480,.0913,.1327],[485,.0687,.2007],[490,.0454,.295],[495,.0235,.4127],[500,.0082,.5384],[505,.0039,.6548],[510,.0139,.7502],[515,.0389,.812],[520,.0743,.8338],[525,.1142,.8262],[530,.1547,.8059],[535,.1929,.7816],[540,.2296,.7543],[545,.2658,.7243],[550,.3016,.6923],[555,.3373,.6589],[560,.3731,.6245],[565,.4087,.5896],[570,.4441,.5547],[575,.4788,.5202],[580,.5125,.4866],[585,.5448,.4544],[590,.5752,.4242],[595,.6029,.3965],[600,.627,.3725],[610,.6658,.334],[620,.6915,.3083],[630,.7079,.292],[640,.719,.2809],[650,.726,.274],[660,.73,.27],[680,.7334,.2666],[700,.7347,.2653]];
+      var Wp = [0.3127, 0.329], E = [0.5654, 0.434], P1 = [0.4301, 0.3783], P2 = [0.521, 0.4058];
+      var ZX = [0.29, 0.53], ZY = [0.30, 0.45];
+
+      function gam(v) { v = Math.max(0, Math.min(1, v)); return v <= 0.0031308 ? 12.92 * v : 1.055 * Math.pow(v, 1 / 2.4) - 0.055; }
+      function c2rgb(x, y) {
+        if (y < 0.002) y = 0.002;
+        var X = x / y, Y = 1, Z = (1 - x - y) / y;
+        var r = 3.2406 * X - 1.5372 * Y - 0.4986 * Z, g = -0.9689 * X + 1.8758 * Y + 0.0415 * Z, b = 0.0557 * X - 0.204 * Y + 1.057 * Z;
+        var m = Math.min(r, g, b); if (m < 0) { r -= m; g -= m; b -= m; }
+        var M = Math.max(r, g, b);
+        return [r / M, g / M, b / M].map(function (v) { return Math.round(255 * gam(v)); });
+      }
+      function hex(c) { return '#' + c.map(function (v) { return ('0' + v.toString(16)).slice(-2); }).join('').toUpperCase(); }
+      function setup(cv) {
+        var d = window.devicePixelRatio || 1, w = cv.clientWidth, h = cv.clientHeight;
+        cv.width = Math.round(w * d); cv.height = Math.round(h * d);
+        var c = cv.getContext('2d'); c.setTransform(d, 0, 0, d, 0, 0);
+        return { c: c, w: w, h: h, d: d };
+      }
+      function paint(c, d, px, py, pw, ph, x0, x1, y0, y1) {
+        var off = document.createElement('canvas'); off.width = Math.round(pw * d); off.height = Math.round(ph * d);
+        var oc = off.getContext('2d'), im = oc.createImageData(off.width, off.height);
+        for (var j = 0; j < off.height; j++) {
+          var yy = y1 - (y1 - y0) * j / off.height;
+          for (var i = 0; i < off.width; i++) {
+            var q = c2rgb(x0 + (x1 - x0) * i / off.width, yy), o = 4 * (j * off.width + i);
+            im.data[o] = q[0]; im.data[o + 1] = q[1]; im.data[o + 2] = q[2]; im.data[o + 3] = 255;
+          }
+        }
+        oc.putImageData(im, 0, 0);
+        c.drawImage(off, px, py, pw, ph);
+      }
+      function tag(c, t, x, y, al) {
+        c.font = '12px system-ui, sans-serif'; c.textAlign = al;
+        var m = c.measureText(t).width, bx = al === 'left' ? x - 3 : x - m - 3;
+        c.fillStyle = 'rgba(255,255,255,0.88)'; c.fillRect(bx, y - 11, m + 6, 15); c.fillStyle = '#111'; c.fillText(t, x, y);
+      }
+      function ring(c, x, y, r) { c.beginPath(); c.arc(x, y, r, 0, 7); c.strokeStyle = '#000'; c.lineWidth = 1.5; c.stroke(); }
+
+      (function () {
+        var s = setup(root.querySelector('.brn-cd')), c = s.c;
+        var pl = 34, pw = s.w - pl - 10, ph = s.h - 26 - 8;
+        function X(x) { return pl + x / 0.8 * pw; }
+        function Y(y) { return 8 + ph - y / 0.9 * ph; }
+        c.save(); c.beginPath();
+        L.forEach(function (p, k) { if (k) c.lineTo(X(p[1]), Y(p[2])); else c.moveTo(X(p[1]), Y(p[2])); });
+        c.closePath(); c.clip(); paint(c, s.d, pl, 8, pw, ph, 0, 0.8, 0, 0.9); c.restore();
+        c.strokeStyle = 'rgba(128,128,128,0.7)'; c.lineWidth = 0.75;
+        c.beginPath(); c.moveTo(X(0), Y(0.9)); c.lineTo(X(0), Y(0)); c.lineTo(X(0.8), Y(0)); c.stroke();
+        c.fillStyle = 'rgba(128,128,128,1)'; c.font = '12px system-ui, sans-serif';
+        c.textAlign = 'center'; [0.2, 0.4, 0.6].forEach(function (v) { c.fillText(v, X(v), Y(0) + 16); });
+        c.fillText('x', X(0.78), Y(0) + 16);
+        c.textAlign = 'right'; [0.2, 0.4, 0.6, 0.8].forEach(function (v) { c.fillText(v, X(0) - 5, Y(v) + 4); });
+        c.fillText('y', X(0) - 5, Y(0.88) + 4);
+        c.setLineDash([4, 3]); c.strokeStyle = '#000'; c.lineWidth = 1.25;
+        c.beginPath(); c.moveTo(X(Wp[0]), Y(Wp[1])); c.lineTo(X(E[0]), Y(E[1])); c.stroke(); c.setLineDash([]);
+        c.strokeStyle = 'rgba(0,0,0,0.55)'; c.lineWidth = 1;
+        c.strokeRect(X(ZX[0]), Y(ZY[1]), X(ZX[1]) - X(ZX[0]), Y(ZY[0]) - Y(ZY[1]));
+        ring(c, X(Wp[0]), Y(Wp[1]), 4); ring(c, X(P1[0]), Y(P1[1]), 7); ring(c, X(P2[0]), Y(P2[1]), 5);
+        c.beginPath(); c.arc(X(E[0]), Y(E[1]), 3, 0, 7); c.fillStyle = '#000'; c.fill();
+        tag(c, 'white', X(Wp[0]) - 8, Y(Wp[1]) + 18, 'right');
+        tag(c, '#583927', X(P1[0]) + 4, Y(ZY[1]) - 6, 'right');
+        tag(c, 'demo orange', X(P2[0]) + 4, Y(P2[1]) + 22, 'left');
+        tag(c, '588 nm', X(E[0]) + 8, Y(E[1]) - 6, 'left');
+      })();
+
+      (function () {
+        var s = setup(root.querySelector('.brn-zm')), c = s.c;
+        paint(c, s.d, 0, 0, s.w, s.h, ZX[0], ZX[1], ZY[0], ZY[1]);
+        function X(x) { return (x - ZX[0]) / (ZX[1] - ZX[0]) * s.w; }
+        function Y(y) { return (ZY[1] - y) / (ZY[1] - ZY[0]) * s.h; }
+        ring(c, X(P1[0]), Y(P1[1]), 14);
+        ring(c, X(Wp[0]), Y(Wp[1]), 4);
+        tag(c, '#583927 = #FFAD7E', X(P1[0]) + 20, Y(P1[1]) + 4, 'left');
+        tag(c, 'white', X(Wp[0]) + 10, Y(Wp[1]) + 4, 'left');
+      })();
+
+      var lin = [1, 0.4196, 0.2083], Ymax = 0.2126 * lin[0] + 0.7152 * lin[1] + 0.0722 * lin[2];
+      var lad = root.querySelector('.brn-ladder');
+      [0.0975, 0.2, 0.35, 0.5, 0.75, 1].forEach(function (f) {
+        var col = lin.map(function (v) { return Math.round(255 * gam(v * f)); });
+        var st = document.createElement('div'); st.className = 'brn-step';
+        st.innerHTML = '<div class="sw" style="background:' + hex(col) + '"></div><div class="lb">' + hex(col) + '<br>Y ' + Math.round(Ymax * f * 100) + '%</div>';
+        lad.appendChild(st);
+      });
+    })();
+  </script>
+</div>
+
+
+<p> I also hesitate to comment on this and defer to those with more meaningful lived experience, but it is interesting to me that all these colors look like a large range of normal human skin tones. And yet, the chromaticity range actually seems to be rather small. Below is an example of human skin tones levelled to the same luminance. The wide and beatiful range of ways people can be, within a very narrow range of chromaticity, is I think good evidence for just how complex and wondrous the visual system is.</p>
+
+<!-- Skin tones from published spectrophotometer measurements, leveled to equal luminance. Open directly, or paste inside a page's <body>. Scoped to .sk-sum. -->
+<div class="sk-sum">
+  <style>
+    .sk-sum { max-width: 680px; margin: 0 auto; padding: 16px; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color: inherit; line-height: 1.35; }
+    .sk-sum * { box-sizing: border-box; }
+    .sk-sum h2 { font-size: 20px; font-weight: 500; margin: 0 0 4px; }
+    .sk-sum .sk-cap { font-size: 12px; opacity: 0.7; margin-top: 6px; }
+    .sk-sum .sk-head, .sk-sum .sk-row { display: grid; grid-template-columns: minmax(0, 1.6fr) repeat(4, minmax(0, 1fr)); gap: 4px; align-items: stretch; }
+    .sk-sum .sk-head { font-size: 12px; opacity: 0.75; margin: 14px 0 4px; }
+    .sk-sum .sk-head div { text-align: center; }
+    .sk-sum .sk-head div:first-child { text-align: left; }
+    .sk-sum .sk-row { margin-bottom: 4px; }
+    .sk-sum .sk-lab { font-size: 13px; padding-right: 6px; align-self: center; }
+    .sk-sum .sk-meta { font-size: 11px; opacity: 0.6; }
+    .sk-sum .sk-num { display: inline-block; min-width: 18px; font-size: 11px; opacity: 0.6; }
+    .sk-sum .sk-sw { height: 44px; border-radius: 4px; display: flex; align-items: flex-end; justify-content: center; }
+    .sk-sum .sk-sw span { font-size: 10px; color: #fff; opacity: 0.85; padding-bottom: 2px; font-variant-numeric: tabular-nums; }
+    .sk-sum .sk-gap { margin-left: 6px; }
+    .sk-sum .sk-head .sk-gap { margin-left: 6px; }
+    .sk-sum canvas { width: 100%; display: block; border-radius: 10px; margin-top: 22px; }
+    @media (max-width: 480px) { .sk-sum .sk-head, .sk-sum .sk-row { grid-template-columns: repeat(4, minmax(0, 1fr)); } .sk-sum .sk-lab, .sk-sum .sk-head div:first-child { grid-column: 1 / -1; } .sk-sum .sk-head div:first-child { display: none; } .sk-sum .sk-row { margin-bottom: 10px; } .sk-sum .sk-sw { height: 36px; } .sk-sum .sk-sw span { display: none; } .sk-sum .sk-gap, .sk-sum .sk-head .sk-gap { margin-left: 0; } }
+  </style>
+
+  <h2>Skin tones at equal luminance</h2>
+  <div class="sk-cap" style="margin-top:0">Study means, sun-protected skin. Rows sorted by purity (least saturated first).</div>
+
+  <div class="sk-head"><div></div><div>Measured</div><div class="sk-gap">High (Y 50%)</div><div>Medium (Y 20%)</div><div>Low (Y 5%)</div></div>
+<div class="sk-row"><div class="sk-lab"><span class="sk-num">1</span>Caucasian (UK)<div class="sk-meta">Xiao 2017 · inner arm · n=187</div></div>
+<div class="sk-sw" style="background:#AC9480"><span>#AC9480</span></div><div class="sk-sw sk-gap" style="background:#D3B69E"></div><div class="sk-sw" style="background:#8C7867"></div><div class="sk-sw" style="background:#483D34"></div></div>
+<div class="sk-row"><div class="sk-lab"><span class="sk-num">2</span>Chinese<div class="sk-meta">Xiao 2017 · inner arm · n=202</div></div>
+<div class="sk-sw" style="background:#A98E79"><span>#A98E79</span></div><div class="sk-sw sk-gap" style="background:#D7B59B"></div><div class="sk-sw" style="background:#8F7765"></div><div class="sk-sw" style="background:#4A3D33"></div></div>
+<div class="sk-row"><div class="sk-lab"><span class="sk-num">3</span>White (US)<div class="sk-meta">Wright 2012 · upper inner arm · n=118</div></div>
+<div class="sk-sw" style="background:#B79980"><span>#B79980</span></div><div class="sk-sw sk-gap" style="background:#D9B598"></div><div class="sk-sw" style="background:#8F7763"></div><div class="sk-sw" style="background:#4A3D32"></div></div>
+<div class="sk-row"><div class="sk-lab"><span class="sk-num">4</span>Kurdish<div class="sk-meta">Xiao 2017 · inner arm · n=145</div></div>
+<div class="sk-sw" style="background:#A88D76"><span>#A88D76</span></div><div class="sk-sw sk-gap" style="background:#D7B598"></div><div class="sk-sw" style="background:#8F7763"></div><div class="sk-sw" style="background:#4A3D31"></div></div>
+<div class="sk-row"><div class="sk-lab"><span class="sk-num">5</span>Thai<div class="sk-meta">Xiao 2017 · inner arm · n=426</div></div>
+<div class="sk-sw" style="background:#AD9077"><span>#AD9077</span></div><div class="sk-sw sk-gap" style="background:#D9B596"></div><div class="sk-sw" style="background:#907762"></div><div class="sk-sw" style="background:#4A3D31"></div></div>
+<div class="sk-row"><div class="sk-lab"><span class="sk-num">6</span>Asian (US)<div class="sk-meta">Wright 2012 · upper inner arm · n=13</div></div>
+<div class="sk-sw" style="background:#AA886D"><span>#AA886D</span></div><div class="sk-sw sk-gap" style="background:#DFB390"></div><div class="sk-sw" style="background:#94765E"></div><div class="sk-sw" style="background:#4D3C2F"></div></div>
+<div class="sk-row"><div class="sk-lab"><span class="sk-num">7</span>Bengali Hindu (India)<div class="sk-meta">Maitra 2019 · underarm · n=104</div></div>
+<div class="sk-sw" style="background:#96785E"><span>#96785E</span></div><div class="sk-sw sk-gap" style="background:#DFB38E"></div><div class="sk-sw" style="background:#94765C"></div><div class="sk-sw" style="background:#4D3C2E"></div></div>
+<div class="sk-row"><div class="sk-lab"><span class="sk-num">8</span>Chakma (NE India)<div class="sk-meta">Maitra 2019 · underarm · n=105</div></div>
+<div class="sk-sw" style="background:#9C775C"><span>#9C775C</span></div><div class="sk-sw sk-gap" style="background:#E6B18A"></div><div class="sk-sw" style="background:#99745A"></div><div class="sk-sw" style="background:#4F3B2C"></div></div>
+<div class="sk-row"><div class="sk-lab"><span class="sk-num">9</span>Tripuri (NE India)<div class="sk-meta">Maitra 2019 · underarm · n=103</div></div>
+<div class="sk-sw" style="background:#967157"><span>#967157</span></div><div class="sk-sw sk-gap" style="background:#E8B089"></div><div class="sk-sw" style="background:#9A7459"></div><div class="sk-sw" style="background:#503B2C"></div></div>
+<div class="sk-row"><div class="sk-lab"><span class="sk-num">10</span>Black / African American (US)<div class="sk-meta">Wright 2012 · upper inner arm · n=101</div></div>
+<div class="sk-sw" style="background:#89674D"><span>#89674D</span></div><div class="sk-sw sk-gap" style="background:#E7B186"></div><div class="sk-sw" style="background:#997457"></div><div class="sk-sw" style="background:#503B2B"></div></div>
+
+  <canvas class="sk-cd" style="height:300px"></canvas>
+  <div class="sk-cap">Chromaticity close-up; dashed line runs from white to 584 nm. Numbers match the rows. All fall at 582–586 nm; purity 21–38%, rising as measured luminance falls (r = −0.92).</div>
+
+  <div class="sk-cap" style="margin-top:16px">CIELAB → XYZ (D65, 2°) → linear sRGB; each row scaled to the target luminance, keeping chromaticity fixed. Two studies don't state their illuminant; D65 assumed. Means hide large individual variation (L* SD ≈ 4–8).</div>
+
+  <script>
+    (function () {
+      var root = document.currentScript.closest('.sk-sum');
+      var P = [[1, 0.3585, 0.3591, "#AC9480"], [2, 0.3651, 0.3608, "#A98E79"], [3, 0.3689, 0.3637, "#B79980"], [4, 0.3679, 0.3651, "#A88D76"], [5, 0.3707, 0.3663, "#AD9077"], [6, 0.3823, 0.3699, "#AA886D"], [7, 0.3849, 0.3732, "#96785E"], [8, 0.3955, 0.3739, "#9C775C"], [9, 0.3989, 0.374, "#967157"], [10, 0.4003, 0.3782, "#89674D"]];
+      var Wp = [0.3127, 0.329], ZX = [0.348, 0.41], ZY = [0.352, 0.384];
+      var E = [0.5384, 0.4608];
+      function gam(v) { v = Math.max(0, Math.min(1, v)); return v <= 0.0031308 ? 12.92 * v : 1.055 * Math.pow(v, 1 / 2.4) - 0.055; }
+      function c2rgb(x, y) {
+        var X = x / y, Y = 1, Z = (1 - x - y) / y;
+        var r = 3.2406 * X - 1.5372 * Y - 0.4986 * Z, g = -0.9689 * X + 1.8758 * Y + 0.0415 * Z, b = 0.0557 * X - 0.204 * Y + 1.057 * Z;
+        var m = Math.min(r, g, b); if (m < 0) { r -= m; g -= m; b -= m; }
+        var M = Math.max(r, g, b);
+        return [r / M, g / M, b / M].map(function (v) { return Math.round(255 * gam(v)); });
+      }
+      var cv = root.querySelector('.sk-cd'), d = window.devicePixelRatio || 1, w = cv.clientWidth, h = cv.clientHeight;
+      cv.width = Math.round(w * d); cv.height = Math.round(h * d);
+      var c = cv.getContext('2d'), im = c.createImageData(cv.width, cv.height);
+      for (var j = 0; j < cv.height; j++) {
+        var yy = ZY[1] - (ZY[1] - ZY[0]) * j / cv.height;
+        for (var i = 0; i < cv.width; i++) {
+          var q = c2rgb(ZX[0] + (ZX[1] - ZX[0]) * i / cv.width, yy), o = 4 * (j * cv.width + i);
+          im.data[o] = q[0]; im.data[o + 1] = q[1]; im.data[o + 2] = q[2]; im.data[o + 3] = 255;
+        }
+      }
+      c.putImageData(im, 0, 0); c.setTransform(d, 0, 0, d, 0, 0);
+      function X(x) { return (x - ZX[0]) / (ZX[1] - ZX[0]) * w; }
+      function Y(y) { return (ZY[1] - y) / (ZY[1] - ZY[0]) * h; }
+      c.setLineDash([4, 3]); c.strokeStyle = 'rgba(0,0,0,0.6)'; c.lineWidth = 1;
+      c.beginPath(); c.moveTo(X(Wp[0]), Y(Wp[1])); c.lineTo(X(E[0]), Y(E[1])); c.stroke(); c.setLineDash([]);
+      c.font = '12px system-ui, sans-serif'; c.fillStyle = '#111'; c.textAlign = 'left';
+      c.fillText('← toward white', 8, h - 10);
+      c.textAlign = 'right'; c.fillText('line continues to ~584 nm ↗', w - 8, h - 10);
+      P.forEach(function (p) {
+        c.beginPath(); c.arc(X(p[1]), Y(p[2]), 6, 0, 7); c.fillStyle = p[3]; c.fill(); c.strokeStyle = '#000'; c.lineWidth = 1; c.stroke();
+      });
+      c.font = '11px system-ui, sans-serif'; c.fillStyle = '#111';
+      P.forEach(function (p) {
+        var up = p[0] % 2 === 0;
+        c.textAlign = 'center'; c.fillText(p[0], X(p[1]), Y(p[2]) + (up ? -10 : 18));
+      });
+    })();
+  </script>
+</div>
+
+
+
+</td>
+
+</tr>
+</table>
+
+<div class="footer">
+<hr>
+This website has not been evaluated by the FDA. This website is not designed to diagnose, treat, cure, prevent, do the macarena with, play chess against, or clobber any disease.
+</div>
+
+</body>
+</html>
